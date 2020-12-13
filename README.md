@@ -1,6 +1,6 @@
 # Super_Mario_Bros
 
-CONTROLS:
+###CONTROLS:
 "UP" for jump
 "LEFT/RIGHT" to move
 "DOWN" to crouch
