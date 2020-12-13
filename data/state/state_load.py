@@ -3,20 +3,17 @@ from .. components.mario import *
 from .. import constante as c  
 from .. components import info
 from .. import sound
+from . import state
 
-class Load(object):
+class Load(state.State):
     def __init__(self):
-        self.done = False
-        self.next = c.LEVEL
-        self.current_update = 0
+        state.State.__init__(self)
 
     def startup(self,current_time):
+        self.next = c.LEVEL
         self.info = info.Info(c.LOAD)
         self.current_update = current_time
         info.game_info["time"] = 401
-
-    def cleanup(self):
-        self.done = False
 
 
     def draw_everything(self,screen):
