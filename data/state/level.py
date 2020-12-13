@@ -10,13 +10,14 @@ from .. components.coin_brick import *
 from .. components.power import *
 from .. components.ennemy import *
 from .. components.checkpoint import *
+from . import state
 
-class Level():
+class Level(state.State):
     def __init__(self):
-        self.done = False
-        self.next = None
+        state.State.__init__(self)
         
     def startup(self,current_time):
+        self.next = None
         self.state = c.NOTFREEZE
         self.timeOut = False
         self.current_update = current_time
@@ -24,10 +25,6 @@ class Level():
         self.timeEnd_timer = 0
         self.setup_everything()
         self.info = info.Info(c.LEVEL)
-
-    def cleanup(self):
-        self.done = False
-        self.next = None
 
     def setup_background(self):
         self.background = pg.image.load("images/fond_0.png")
