@@ -1,7 +1,7 @@
 # Super_Mario_Bros
 
 ### CONTROLS:
-"UP" for jump \n
-"LEFT/RIGHT" to move \n
-"DOWN" to crouch \n
-"SPACE" for action \n
+"UP" for jump </br>
+"LEFT/RIGHT" to move </br>
+"DOWN" to crouch </br>
+"SPACE" for action </br>
