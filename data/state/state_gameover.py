@@ -1,27 +1,27 @@
 import pygame as pg
 from .. components import info
 from .. import sound
-from .. import constante as c 
+from .. import constante as c
+from . import state
 
-class GameOver(object):
+class GameOver(state.State):
     def __init__(self):
-        self.done = False
-        self.next = c.MAIN_MENU
-        self.current_update = 0
+        state.State.__init__(self)   
         
     def startup(self,current_time):
+        self.next = c.MAIN_MENU
         sound.gameover.play()
         self.info = info.Info(c.GAMEOVER)
         self.current_update = current_time
 
-        
-    def cleanup(self):
-        self.done = False
+    
+    def draw_everything(self,screen):
+        screen.fill((0,0,0))
+        self.info.draw(screen)
     
     def update(self,keys,screen,current_time):
         if current_time - self.current_update < 4000:
             self.info.update(current_time)
-            screen.fill((0,0,0))
-            self.info.draw(screen)
+            self.draw_everything(screen)
         else:
             self.done = True
