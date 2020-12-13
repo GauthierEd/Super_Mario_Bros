@@ -3,14 +3,15 @@ from pygame.locals import *
 from .. components.mario import *
 from .. import constante as c  
 from .. components import info
+from . import state
 
-class Menu(object):
+class Menu(state.State):
     def __init__(self):
-        self.done = False
-        self.next = c.LOAD
+        state.State.__init__(self)
         self.startup(0.0)
-        
+
     def startup(self,current_time):
+        self.next = c.LOAD
         self.info = info.Info(c.MAIN_MENU)
         self.sprite = pg.image.load("images/sprite_menu.png")
         self.setup_game_info()
@@ -18,9 +19,6 @@ class Menu(object):
         self.setup_mario()
         self.setup_title()
         self.setup_button()
-
-    def cleanup(self):
-        self.done = False
 
     def setup_game_info(self):
         info.game_info = {
