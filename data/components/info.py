@@ -188,6 +188,7 @@ class Info(object):
     def update(self,current_time,state = None):
         if self.state == c.MAIN_MENU:
             self.flash_coin.update()
+            self.setup_count_coin()
         elif self.state == c.LEVEL:
             self.timeUpdate(current_time,state)
             self.setup_timer()

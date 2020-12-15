@@ -26,6 +26,7 @@ MUSH_MOVE = "mush_move"
 FREEZE = "freeze"
 NOTFREEZE = "notfreeze"
 INCASTLE = "incastle"
+INUNDER = "inunder"
 
 # State Brick
 BUMPED = "bumped"

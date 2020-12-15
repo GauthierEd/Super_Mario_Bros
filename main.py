@@ -55,3 +55,4 @@ if __name__ == "__main__":
     pg.init()
     game = Game(c.MAIN_MENU)
     game.main()
+    pg.quit()

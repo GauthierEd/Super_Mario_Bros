@@ -4,7 +4,8 @@ from .. import constante as c
 class checkPoint(pg.sprite.Sprite):
     def __init__(self,x,y,name = None):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((5,c.HEIGHT), pg.SRCALPHA, 32)
+        self.image = pg.Surface((32 * c.BACKGROUND_SIZE_MULTIPLIER,c.HEIGHT), pg.SRCALPHA, 32)
+        
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
         self.rect.y = y

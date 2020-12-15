@@ -27,12 +27,13 @@ class Level(state.State):
         self.info = info.Info(c.LEVEL)
 
     def setup_background(self):
-        self.background = pg.image.load("images/fond_0.png")
+        self.background = pg.image.load("images/fond_1.png")
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,(int(self.back_rect.width * c.BACKGROUND_SIZE_MULTIPLIER),int(self.back_rect.height * c.BACKGROUND_SIZE_MULTIPLIER)))
         self.back_rect = self.background.get_rect()
         self.back_rect.x = 0
         self.back_rect.y = 0
+        self.count_scroll = 0
         
     def setup_mario(self):
         self.fireball = pg.sprite.Group()
@@ -44,7 +45,8 @@ class Level(state.State):
         ground_2 = Collider(1136,c.GROUND_HEIGHT,240,24)
         ground_3 = Collider(1424,c.GROUND_HEIGHT,1024,24)
         ground_4 = Collider(2480,c.GROUND_HEIGHT,912,24)
-        self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4)
+        ground_5 = Collider(3392,c.GROUND_HEIGHT,256,24)
+        self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4,ground_5)
 
     def setup_pipe(self):
         pipe_1 = Collider(449,452,30,31)
@@ -53,8 +55,10 @@ class Level(state.State):
         pipe_4 = Collider(913,137 * c.BACKGROUND_SIZE_MULTIPLIER,30,63)
         pipe_5 = Collider(2609,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
         pipe_6 = Collider(2865,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
+        pipe_7 = Collider(3635,168 * c.BACKGROUND_SIZE_MULTIPLIER,40,32)
+        pipe_8 = Collider(3675,24 * c.BACKGROUND_SIZE_MULTIPLIER,16,176)
 
-        self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6)
+        self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6,pipe_7,pipe_8)
 
     def setup_stair(self):
         stair_1 = Collider(2144,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
@@ -116,9 +120,9 @@ class Level(state.State):
         brick_14 = Brick(1456,72)
         brick_15 = Brick(1472,72)
         brick_16 = Brick(1488,72)
-        brick_17 = Brick(1504,136,self.coin,"coin")  # coin
+        brick_17 = Brick(1504,136,False,self.coin,"coin")  # coin
         brick_18 = Brick(1600,136)
-        brick_19 = Brick(1616,136,self.power,"star") # star
+        brick_19 = Brick(1616,136,False,self.power,"star") # star
         brick_20 = Brick(1888,136)
         brick_21 = Brick(1936,72)
         brick_22 = Brick(1952,72)
@@ -131,11 +135,16 @@ class Level(state.State):
         brick_29 = Brick(2704,136)
         brick_30 = Brick(2736,136)
 
+        brick_31 = Brick(3392,184,True)
+
         self.brick = pg.sprite.Group(brick_1,brick_2,brick_3,brick_4,brick_5,brick_6,brick_7,brick_8,brick_9,
                                         brick_10,brick_11,brick_12,brick_13,brick_14,brick_15,brick_16,brick_17,
                                         brick_18,brick_19,brick_20,brick_21,brick_22,brick_23,brick_24,brick_25,brick_26,
-                                        brick_27,brick_28,brick_29,brick_30)    
+                                        brick_27,brick_28,brick_29,brick_30,brick_31)    
         
+    def setup_coin(self):
+        coin1 = BigCoin(150,150)
+        self.bigCoin = pg.sprite.Group(coin1)
 
     def setup_coin_brick(self):
         coin_brick_1 = Coin_Brick(256,136,self.coin,"coin")
@@ -207,7 +216,8 @@ class Level(state.State):
         check6 = checkPoint(1830,0,"6")
         check7 = checkPoint(2630,0,"7")
         check8 = checkPoint(3178,32,"8")
-        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8)
+        check9 = checkPoint(912,130,"pipe")
+        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9)
         self.flag = Flag(3175,40)
         self.flagEnd = FlagEnd(3265,140)
         
@@ -219,6 +229,7 @@ class Level(state.State):
         self.setup_pipe()
         self.setup_stair()
         self.setup_power()
+        self.setup_coin()
         self.setup_brick()
         self.setup_coin_brick()
         self.setup_ennemy()
@@ -238,7 +249,22 @@ class Level(state.State):
             self.update_while_transition(keys)
         elif self.state == c.INCASTLE:
             self.update_while_castle(keys)
+        elif self.state == c.INUNDER:
+            self.update_while_under(keys)
     
+    def update_while_under(self,keys):
+        self.mario.update(keys)
+        self.ground.update()
+        self.brick.update()
+        self.brick_piece.update()
+        self.bigCoin.update()
+        self.fireball.update()
+        self.adjust_position_mario()
+        self.adjust_position_fireball()
+        self.info.update(self.current_update,self.mario.state)
+        self.check_if_change_state()
+        self.check_if_timeout()
+
     def update_while_castle(self,keys):
         self.info.end_score()
         self.info.update(self.current_update,self.mario.state)
@@ -271,6 +297,7 @@ class Level(state.State):
         self.brick_piece.update()
         self.coin_brick.update()
         self.coin.update()
+        self.bigCoin.update()
         self.power.update()
         self.ennemy.update()
         self.ennemy_death.update()
@@ -283,7 +310,7 @@ class Level(state.State):
         self.adjust_position_ennemy()
         self.adjust_position_fireball()
         self.info.update(self.current_update,self.mario.state)
-        if abs(self.back_rect.x) < self.back_rect.width - 805:
+        if abs(self.back_rect.x) < self.back_rect.width - 1606:
             self.update_background()
         self.check_if_mario_in_transition()
         self.check_if_change_state()
@@ -342,10 +369,25 @@ class Level(state.State):
         elif self.mario.inCastle:
             sound.count_time.play()
             self.state = c.INCASTLE
+        elif self.mario.inUnder:
+            sound.pipe.play()
+            self.set_in_underground()
+            self.state = c.INUNDER
         else:
             self.state = c.NOTFREEZE
 
+    def set_in_underground(self):
+            self.mario.rect.x = 30 * c.BACKGROUND_SIZE_MULTIPLIER
+            self.mario.rect.y = 40 * c.BACKGROUND_SIZE_MULTIPLIER
+            self.back_rect.x = -9087
+            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
+            for i in all_sprite:
+                i.rect.x += self.count_scroll
+            for i in all_sprite:
+                i.rect.x -= 9087
+
     def draw_everything(self,screen):
+        print("draw")
         screen.blit(self.background,(self.back_rect.x,self.back_rect.y))
         screen.blit(self.flag.image,self.flag.rect)
         if not self.mario.inCastle:
@@ -353,6 +395,7 @@ class Level(state.State):
         if self.flagEnd.rect.top < 121*c.BACKGROUND_SIZE_MULTIPLIER:
             screen.blit(self.flagEnd.image,self.flagEnd.rect)
         self.ground.draw(screen)
+        self.bigCoin.draw(screen)
         self.power.draw(screen)
         self.brick.draw(screen)
         self.ennemy.draw(screen)
@@ -393,23 +436,25 @@ class Level(state.State):
         if self.mario.rect.x > c.WIDTH / 2 and self.mario.vx > 0: 
             self.mario.rect.x -= round(self.mario.vx)
             self.back_rect.x -= round(self.mario.vx)
-            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd)
+            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
             for i in all_sprite:
                 i.rect.x -= round(self.mario.vx)
             for line in self.score:
                 for char in line:
                     char.rect.x -= round(self.mario.vx /2)
+            self.count_scroll += round(self.mario.vx)
 
         # Commence le scrolle du backround
         elif self.mario.rect.x > 250 and self.mario.vx > 0:
             self.mario.rect.x -= round(self.mario.vx / 2)
             self.back_rect.x -= round(self.mario.vx / 2)
-            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd)
+            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
             for i in all_sprite:
                 i.rect.x -= round(self.mario.vx / 2)
             for line in self.score:
                 for char in line:
                     char.rect.x -= round(self.mario.vx /2)
+            self.count_scroll += round(self.mario.vx / 2)
 
     def change_mush_into_flower(self):
         for b in self.brick:
@@ -430,6 +475,7 @@ class Level(state.State):
     def adjust_position_mario(self):
         self.mario.rect.x += round(self.mario.vx)
         if not self.mario.state == c.JUMPTODEATH:
+            self.mario.canGoUnder = False
             self.check_mario_x_collision()
 
         self.mario.rect.y += round(self.mario.vy)
@@ -444,8 +490,7 @@ class Level(state.State):
         hit_block = pg.sprite.spritecollideany(self.mario,self.brick)
         hit_coin_brick = pg.sprite.spritecollideany(self.mario,self.coin_brick)
         hit_power = pg.sprite.spritecollideany(self.mario,self.power)
-
-
+        hit_coin = pg.sprite.spritecollideany(self.mario,self.bigCoin)
 
         hit_ennemy = pg.sprite.spritecollideany(self.mario,self.ennemy)
 
@@ -459,6 +504,10 @@ class Level(state.State):
             self.adjust_position_x(hit_coin_brick)
         elif hit_power:
             self.adjust_collision_power(hit_power)
+        elif hit_coin:
+            sound.coin.play()
+            info.game_info["coin_count"] += 1
+            hit_coin.kill()
         elif hit_ennemy and not self.mario.wasTouched and not self.mario.state == c.JUMPTODEATH:
             self.adjust_collision_ennemy_x(hit_ennemy)
         elif hit_checkpoint:
@@ -529,6 +578,8 @@ class Level(state.State):
                 info.game_info["scores"] += 200
                 self.test_score("200",self.mario.rect.x+30,self.mario.rect.y)
             checkpoint.kill()
+        elif checkpoint.name == "pipe":
+            self.mario.canGoUnder = True
 
     def adjust_collision_ennemy_x(self,ennemy):
         if self.mario.rect.right > ennemy.rect.left and self.mario.rect.left < ennemy.rect.left:
@@ -770,10 +821,16 @@ class Level(state.State):
                     self.check_if_ennemy_on_brick(collider)
                     collider.kill()
 
-                    self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.y,-5,-12,0))
-                    self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.y,5,-12,1))
-                    self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
-                    self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
+                    if collider.underground:
+                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.y,-5,-12,0,True))
+                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.y,5,-12,1,True))
+                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.bottom-16,-5,-8,2,True))
+                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.bottom-16,5,-8,3,True))
+                    else:  
+                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.y,-5,-12,0))
+                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.y,5,-12,1))
+                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
+                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
                 else:
                     sound.bump.play()
                     if collider.state != c.OPENED:

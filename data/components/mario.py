@@ -37,6 +37,8 @@ class Mario(pg.sprite.Sprite):
         self.wasTouched = False
         self.dead = False
         self.inCastle = False
+        self.canGoUnder = False
+        self.inUnder = False
 
     def setup_timer(self):
         self.last_update = 0
@@ -377,6 +379,8 @@ class Mario(pg.sprite.Sprite):
                 self.vy = c.JUMP_VEL
         elif keys[c.handleInput["bas"]]:
             self.crouch = True
+            if self.canGoUnder:
+                self.inUnder = True
 
         if not keys[c.handleInput["bas"]]:
             self.crouch = False

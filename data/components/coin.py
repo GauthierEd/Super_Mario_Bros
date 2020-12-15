@@ -102,4 +102,53 @@ class flash_coin(pg.sprite.Sprite):
     def time_between_2_date(self,t1,t2):
         if (self.current_update - self.last_update) >= t1 and (self.current_update - self.last_update) < t2:
             return True
-        
+
+class BigCoin(pg.sprite.Sprite):
+    def __init__(self,x,y):
+        pg.sprite.Sprite.__init__(self)
+        self.sprite = pg.image.load("images/sprite_object.png")
+        self.load_img()
+        self.image = self.frame[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
+        self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
+        self.current_update = 0
+        self.last_update = 0
+
+    def getImage(self,x,y,w,h):
+        image = pg.Surface((w,h))
+        image.blit(self.sprite,(0,0),(x,y,w,h))
+        image.set_colorkey((255,255,255))
+        image = pg.transform.scale(image,(int(w* c.BRICK_SIZE_MULTIPLIER),int(h* c.BRICK_SIZE_MULTIPLIER)))
+        return image
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+
+        self.frame.append(self.getImage(3,98,10,14))
+        self.frame.append(self.getImage(19,98,10,14))
+        self.frame.append(self.getImage(35,98,10,14))
+    
+    def update(self):
+        self.current_update = pg.time.get_ticks()
+        if self.last_update == 0:
+            self.last_update = self.current_update
+        elif self.time_between_2_date(200,250):
+            self.frame_index = 0
+        elif self.time_between_2_date(750,800):
+            self.frame_index = 1
+        elif self.time_between_2_date(875,925):
+            self.frame_index = 2
+            self.last_update = 0
+    
+        bottom = self.rect.bottom
+        left = self.rect.left
+        self.image = self.frame[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.left = left
+        self.rect.bottom = bottom
+    
+    def time_between_2_date(self,t1,t2):
+        if (self.current_update - self.last_update) >= t1 and (self.current_update - self.last_update) < t2:
+            return True

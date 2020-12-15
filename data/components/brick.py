@@ -6,11 +6,12 @@ from . coin import *
 
 
 class Brick(pg.sprite.Sprite):
-    def __init__(self,x,y,group = None,content = None):
+    def __init__(self,x,y,underground = False,group = None,content = None):
         pg.sprite.Sprite.__init__(self)
         self.sprite = pg.image.load("images/sprite_block.png")
+        self.underground = underground
         self.load_img()
-        self.image = self.frame[0]
+        self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
         self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
@@ -20,6 +21,7 @@ class Brick(pg.sprite.Sprite):
         self.content = content
         self.group = group
         self.coin = 6
+        
 
     def getImage(self,x,y,w,h):
         image = pg.Surface((w,h))
@@ -30,9 +32,14 @@ class Brick(pg.sprite.Sprite):
 
     def load_img(self):
         self.frame = []
-
+        if self.underground:
+            self.frame_index = 2
+        else:
+            self.frame_index = 0
         self.frame.append(self.getImage(272,112,16,16)) # brick
         self.frame.append(self.getImage(320,112,16,16)) # brick opened
+        self.frame.append(self.getImage(272,128,16,16)) # brick underground
+        self.frame.append(self.getImage(336,128,16,16)) # brick underground opened
 
     def startBump(self):
         self.vy = -6
@@ -69,7 +76,11 @@ class Brick(pg.sprite.Sprite):
         pass
 
     def opened(self):
-        self.image = self.frame[1]
+        if self.underground:
+            self.frame_index = 3
+        else:
+            self.frame_index = 1
+        self.image = self.frame[self.frame_index]
         
     def update(self):
         self.handleState()
@@ -77,11 +88,13 @@ class Brick(pg.sprite.Sprite):
 
 
 class BrickPiece(pg.sprite.Sprite):
-    def __init__(self,x,y,vx,vy,frame_index):
+    def __init__(self,x,y,vx,vy,frame_index,underground = False):
         pg.sprite.Sprite.__init__(self)
         self.sprite = pg.image.load("images/sprite_block.png")
+        self.underground = underground
+        self.frame_index = frame_index
         self.loadImg()
-        self.image = self.frame[frame_index]
+        self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -97,11 +110,17 @@ class BrickPiece(pg.sprite.Sprite):
 
     def loadImg(self):
         self.frame = []
-
-        self.frame.append(self.getImage(304,112,8,8))
+        if self.underground:
+            self.frame_index += 4
+        self.frame.append(self.getImage(304,112,8,8)) # overworld
         self.frame.append(self.getImage(312,112,8,8))
         self.frame.append(self.getImage(304,120,8,8))
         self.frame.append(self.getImage(312,120,8,8))
+        self.frame.append(self.getImage(304,128,8,8)) # underground
+        self.frame.append(self.getImage(312,128,8,8))
+        self.frame.append(self.getImage(304,136,8,8))
+        self.frame.append(self.getImage(312,136,8,8))
+
 
     def update(self):
         self.vy += c.GRAVITY
