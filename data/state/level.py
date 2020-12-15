@@ -23,6 +23,7 @@ class Level(state.State):
         self.current_update = current_time
         self.timeOut_timer = 0
         self.timeEnd_timer = 0
+        self.under_timer = 0
         self.setup_everything()
         self.info = info.Info(c.LEVEL)
 
@@ -104,47 +105,114 @@ class Level(state.State):
         self.score = []
         self.score_timer = []
 
-        brick_1 = Brick(320,136)
-        brick_2 = Brick(352,136)
-        brick_3 = Brick(384,136)
-        brick_4 = Brick(1232,136)
-        brick_5 = Brick(1264,136)
-        brick_6 = Brick(1280,72)
-        brick_7 = Brick(1296,72)
-        brick_8 = Brick(1312,72)
-        brick_9 = Brick(1328,72)
-        brick_10 = Brick(1344,72)
-        brick_11 = Brick(1360,72)
-        brick_12 = Brick(1376,72)
-        brick_13 = Brick(1392,72)
-        brick_14 = Brick(1456,72)
-        brick_15 = Brick(1472,72)
-        brick_16 = Brick(1488,72)
-        brick_17 = Brick(1504,136,False,self.coin,"coin")  # coin
-        brick_18 = Brick(1600,136)
-        brick_19 = Brick(1616,136,False,self.power,"star") # star
-        brick_20 = Brick(1888,136)
-        brick_21 = Brick(1936,72)
-        brick_22 = Brick(1952,72)
-        brick_23 = Brick(1968,72)
-        brick_24 = Brick(2048,72)
-        brick_25 = Brick(2096,72)
-        brick_26 = Brick(2064,136)
-        brick_27 = Brick(2080,136)
-        brick_28 = Brick(2688,136)
-        brick_29 = Brick(2704,136)
-        brick_30 = Brick(2736,136)
+        brick_1 = BrickOverWorld(320,136)
+        brick_2 = BrickOverWorld(352,136)
+        brick_3 = BrickOverWorld(384,136)
+        brick_4 = BrickOverWorld(1232,136)
+        brick_5 = BrickOverWorld(1264,136)
+        brick_6 = BrickOverWorld(1280,72)
+        brick_7 = BrickOverWorld(1296,72)
+        brick_8 = BrickOverWorld(1312,72)
+        brick_9 = BrickOverWorld(1328,72)
+        brick_10 = BrickOverWorld(1344,72)
+        brick_11 = BrickOverWorld(1360,72)
+        brick_12 = BrickOverWorld(1376,72)
+        brick_13 = BrickOverWorld(1392,72)
+        brick_14 = BrickOverWorld(1456,72)
+        brick_15 = BrickOverWorld(1472,72)
+        brick_16 = BrickOverWorld(1488,72)
+        brick_17 = BrickOverWorld(1504,136,self.coin,"coin")  # coin
+        brick_18 = BrickOverWorld(1600,136)
+        brick_19 = BrickOverWorld(1616,136,self.power,"star") # star
+        brick_20 = BrickOverWorld(1888,136)
+        brick_21 = BrickOverWorld(1936,72)
+        brick_22 = BrickOverWorld(1952,72)
+        brick_23 = BrickOverWorld(1968,72)
+        brick_24 = BrickOverWorld(2048,72)
+        brick_25 = BrickOverWorld(2096,72)
+        brick_26 = BrickOverWorld(2064,136)
+        brick_27 = BrickOverWorld(2080,136)
+        brick_28 = BrickOverWorld(2688,136)
+        brick_29 = BrickOverWorld(2704,136)
+        brick_30 = BrickOverWorld(2736,136)
+        # underGround
+        brick_31 = BrickUnderground(3392,184)
+        brick_32 = BrickUnderground(3392,168)
+        brick_33 = BrickUnderground(3392,152)
+        brick_34 = BrickUnderground(3392,136)
+        brick_35 = BrickUnderground(3392,120)
+        brick_36 = BrickUnderground(3392,104)
+        brick_37 = BrickUnderground(3392,88)
+        brick_38 = BrickUnderground(3392,72)
+        brick_39 = BrickUnderground(3392,56)
+        brick_40 = BrickUnderground(3392,40)
+        brick_41 = BrickUnderground(3392,24)
+        brick_42 = BrickUnderground(3467,24)
+        brick_43 = BrickUnderground(3483,24)
+        brick_44 = BrickUnderground(3499,24)
+        brick_45 = BrickUnderground(3515,24)
+        brick_46 = BrickUnderground(3531,24)
+        brick_47 = BrickUnderground(3547,24)
+        brick_48 = BrickUnderground(3563,24)
+        brick_49 = BrickUnderground(3579,24)
 
-        brick_31 = Brick(3392,184,True)
+        brick_50 = BrickUnderground(3467,152)
+        brick_51 = BrickUnderground(3467,168)
+        brick_52 = BrickUnderground(3467,184)
+        brick_53 = BrickUnderground(3483,152)
+        brick_54 = BrickUnderground(3483,168)
+        brick_55 = BrickUnderground(3483,184)
+        brick_56 = BrickUnderground(3499,152)
+        brick_57 = BrickUnderground(3499,168)
+        brick_58 = BrickUnderground(3499,184)
+        brick_59 = BrickUnderground(3515,152)
+        brick_60 = BrickUnderground(3515,168)
+        brick_61 = BrickUnderground(3515,184)
+        brick_62 = BrickUnderground(3531,152)
+        brick_63 = BrickUnderground(3531,168)
+        brick_64 = BrickUnderground(3531,184)
+        brick_65 = BrickUnderground(3547,152)
+        brick_66 = BrickUnderground(3547,168)
+        brick_67 = BrickUnderground(3547,184)
+        brick_68 = BrickUnderground(3563,152)
+        brick_69 = BrickUnderground(3563,168)
+        brick_70 = BrickUnderground(3563,184)
+        brick_71 = BrickUnderground(3579,152)
+        brick_72 = BrickUnderground(3579,168)
+        brick_73 = BrickUnderground(3579,184)
 
         self.brick = pg.sprite.Group(brick_1,brick_2,brick_3,brick_4,brick_5,brick_6,brick_7,brick_8,brick_9,
                                         brick_10,brick_11,brick_12,brick_13,brick_14,brick_15,brick_16,brick_17,
                                         brick_18,brick_19,brick_20,brick_21,brick_22,brick_23,brick_24,brick_25,brick_26,
-                                        brick_27,brick_28,brick_29,brick_30,brick_31)    
+                                        brick_27,brick_28,brick_29,brick_30,brick_31,brick_32,brick_33,brick_34,brick_35,
+                                        brick_36,brick_37,brick_38,brick_39,brick_40,brick_41,brick_42,brick_43,brick_44,
+                                        brick_45,brick_46,brick_47,brick_48,brick_49,brick_50,brick_51,brick_52,brick_53,
+                                        brick_54,brick_55,brick_56,brick_57,brick_58,brick_59,brick_60,brick_61,brick_62,
+                                        brick_63,brick_64,brick_65,brick_66,brick_67,brick_68,brick_69,brick_70,brick_71,
+                                        brick_72,brick_73)
+       
         
     def setup_coin(self):
-        coin1 = BigCoin(150,150)
-        self.bigCoin = pg.sprite.Group(coin1)
+        coin1 = BigCoin(3470,106)
+        coin2 = BigCoin(3470,138)
+        coin3 = BigCoin(3489,106)
+        coin4 = BigCoin(3489,138)
+        coin5 = BigCoin(3508,106)
+        coin6 = BigCoin(3508,138)
+        coin7 = BigCoin(3526,106)
+        coin8 = BigCoin(3526,138)
+        coin9 = BigCoin(3545,106)
+        coin10 = BigCoin(3545,138)
+        coin11 = BigCoin(3564,106)
+        coin12 = BigCoin(3564,138)
+        coin13 = BigCoin(3582,106)
+        coin14 = BigCoin(3582,138)
+        coin15 = BigCoin(3489,74)
+        coin16 = BigCoin(3508,74)
+        coin17 = BigCoin(3526,74)
+        coin18 = BigCoin(3545,74)
+        coin19 = BigCoin(3564,74)
+        self.bigCoin = pg.sprite.Group(coin1,coin2,coin3,coin4,coin5,coin6,coin7,coin8,coin9,coin10,coin11,coin12,coin13,coin14,coin15,coin16,coin17,coin18,coin19)
 
     def setup_coin_brick(self):
         coin_brick_1 = Coin_Brick(256,136,self.coin,"coin")
@@ -217,7 +285,8 @@ class Level(state.State):
         check7 = checkPoint(2630,0,"7")
         check8 = checkPoint(3178,32,"8")
         check9 = checkPoint(912,130,"pipe")
-        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9)
+        check10 = checkPoint(3633,168 * c.BACKGROUND_SIZE_MULTIPLIER,"pipe2")
+        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9,check10)
         self.flag = Flag(3175,40)
         self.flagEnd = FlagEnd(3265,140)
         
@@ -240,7 +309,28 @@ class Level(state.State):
     def update(self,keys,screen,current_time):
         self.current_update = current_time
         self.handleState(keys)
-        self.draw_everything(screen)
+        self.draw(screen)
+
+    def draw(self,screen):
+        if self.state == c.INUNDER and not self.mario.inUnder:
+            if self.under_timer == 0:
+                self.under_timer =  self.current_update
+            elif self.current_update - self.under_timer > 1000:
+                self.under_timer = 0
+                self.state = c.NOTFREEZE
+            screen.fill((0,0,0))
+        elif self.state == c.NOTFREEZE and self.mario.inUnder:
+            if self.under_timer == 0:
+                sound.pipe.play()
+                self.set_in_underground()
+                self.under_timer =  self.current_update
+            elif self.current_update - self.under_timer > 1000:
+                self.under_timer = 0
+                self.state = c.INUNDER
+            self.mario.vy = 0
+            screen.fill((0,0,0))
+        else:
+            self.draw_everything(screen)
 
     def handleState(self,keys):
         if self.state == c.NOTFREEZE:
@@ -264,6 +354,10 @@ class Level(state.State):
         self.info.update(self.current_update,self.mario.state)
         self.check_if_change_state()
         self.check_if_timeout()
+        if not self.mario.inUnder and self.mario.canGoOverworld:
+            sound.pipe.play()
+            self.set_in_overworld()
+            
 
     def update_while_castle(self,keys):
         self.info.end_score()
@@ -369,25 +463,31 @@ class Level(state.State):
         elif self.mario.inCastle:
             sound.count_time.play()
             self.state = c.INCASTLE
-        elif self.mario.inUnder:
-            sound.pipe.play()
-            self.set_in_underground()
-            self.state = c.INUNDER
         else:
             self.state = c.NOTFREEZE
 
     def set_in_underground(self):
-            self.mario.rect.x = 30 * c.BACKGROUND_SIZE_MULTIPLIER
-            self.mario.rect.y = 40 * c.BACKGROUND_SIZE_MULTIPLIER
-            self.back_rect.x = -9087
-            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
-            for i in all_sprite:
-                i.rect.x += self.count_scroll
-            for i in all_sprite:
-                i.rect.x -= 9087
+       
+        self.mario.rect.x = 30 * c.BACKGROUND_SIZE_MULTIPLIER
+        self.mario.rect.y = 40 * c.BACKGROUND_SIZE_MULTIPLIER
+        self.back_rect.x = -9087
+        all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
+        for i in all_sprite:
+            i.rect.x += self.count_scroll
+        for i in all_sprite:
+            i.rect.x -= 9087
+    
+    def set_in_overworld(self):
+        self.mario.rect.centerx = 380
+        self.mario.rect.bottom = 168 * c.BACKGROUND_SIZE_MULTIPLIER
+        self.back_rect.x = -6628
+        all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
+        for i in all_sprite:
+            i.rect.x += 9087
+        for i in all_sprite:
+            i.rect.x -= 6628
 
     def draw_everything(self,screen):
-        print("draw")
         screen.blit(self.background,(self.back_rect.x,self.back_rect.y))
         screen.blit(self.flag.image,self.flag.rect)
         if not self.mario.inCastle:
@@ -476,6 +576,7 @@ class Level(state.State):
         self.mario.rect.x += round(self.mario.vx)
         if not self.mario.state == c.JUMPTODEATH:
             self.mario.canGoUnder = False
+            self.mario.canGoOverworld = False
             self.check_mario_x_collision()
 
         self.mario.rect.y += round(self.mario.vy)
@@ -580,6 +681,8 @@ class Level(state.State):
             checkpoint.kill()
         elif checkpoint.name == "pipe":
             self.mario.canGoUnder = True
+        elif checkpoint.name == "pipe2":
+            self.mario.canGoOverworld = True
 
     def adjust_collision_ennemy_x(self,ennemy):
         if self.mario.rect.right > ennemy.rect.left and self.mario.rect.left < ennemy.rect.left:
@@ -821,16 +924,16 @@ class Level(state.State):
                     self.check_if_ennemy_on_brick(collider)
                     collider.kill()
 
-                    if collider.underground:
-                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.y,-5,-12,0,True))
-                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.y,5,-12,1,True))
-                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.bottom-16,-5,-8,2,True))
-                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.bottom-16,5,-8,3,True))
-                    else:  
-                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.y,-5,-12,0))
-                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.y,5,-12,1))
-                        self.brick_piece.add(BrickPiece(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
-                        self.brick_piece.add(BrickPiece(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
+                    if collider.name == "overworld":
+                        self.brick_piece.add(BrickPieceOverworld(collider.rect.x,collider.rect.y,-5,-12,0))
+                        self.brick_piece.add(BrickPieceOverworld(collider.rect.right-16,collider.rect.y,5,-12,1))
+                        self.brick_piece.add(BrickPieceOverworld(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
+                        self.brick_piece.add(BrickPieceOverworld(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
+                    elif collider.name == "underground":  
+                        self.brick_piece.add(BrickPieceUnderground(collider.rect.x,collider.rect.y,-5,-12,0))
+                        self.brick_piece.add(BrickPieceUnderground(collider.rect.right-16,collider.rect.y,5,-12,1))
+                        self.brick_piece.add(BrickPieceUnderground(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
+                        self.brick_piece.add(BrickPieceUnderground(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
                 else:
                     sound.bump.play()
                     if collider.state != c.OPENED:

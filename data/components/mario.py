@@ -39,6 +39,7 @@ class Mario(pg.sprite.Sprite):
         self.inCastle = False
         self.canGoUnder = False
         self.inUnder = False
+        self.canGoOverworld = False
 
     def setup_timer(self):
         self.last_update = 0
@@ -391,7 +392,9 @@ class Mario(pg.sprite.Sprite):
         return animation
 
     def walking(self,keys):
-        
+        if self.canGoOverworld:
+            self.inUnder = False
+            
         if self.current_update - self.last_update > self.calculate_speed_animation():
             self.last_update = self.current_update 
             self.frame_index = (self.frame_index + 1) % 3
