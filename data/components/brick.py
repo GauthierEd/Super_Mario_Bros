@@ -52,7 +52,10 @@ class Brick(pg.sprite.Sprite):
             self.vy = 0
             self.state = c.RESTING
             if self.content == "star":
-                self.group.add(Star(self.rect.centerx,self.rect.y,"star"))
+                self.group.add(Star(self.rect.centerx,self.rect.y))
+                self.state = c.OPENED
+            elif self.content == "mushLife":
+                self.group.add(MushroomLife(self.rect.x,self.rect.y))
                 self.state = c.OPENED
             elif self.content == "coin":
                 self.group.add(Coin(self.rect.centerx,self.rect.y))
@@ -91,8 +94,17 @@ class BrickUnderground(Brick):
         self.frame_index = 0
         self.frame.append(self.getImage(272,128,16,16)) # brick underground
         self.frame.append(self.getImage(336,128,16,16)) # brick underground opened
-        
-        
+
+class BrickInvisible(Brick):
+    def __init__(self,x,y,group = None,content = None,name ="invisible"):
+        Brick.__init__(self,x,y,group,content,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(pg.Surface((16*c.BRICK_SIZE_MULTIPLIER,16*c.BRICK_SIZE_MULTIPLIER), pg.SRCALPHA, 32))
+        self.frame.append(self.getImage(320,112,16,16)) # brick opened
+
 
 class BrickPiece(pg.sprite.Sprite):
     def __init__(self,x,y,vx,vy,frame_index):
