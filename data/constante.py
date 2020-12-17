@@ -6,27 +6,22 @@ LEVEL = "level"
 LOAD = "load"
 GAMEOVER = "gameover"
 TIMEOUT = "timeout"
+
 # State Gumba
 DEATH = "death"
 BORN = "born"
 
-# State Star
-STAR_SPAWN = "star_spawn"
-STAR_MOVE = "star_move"
+#State Power
+POWER_SPAWN = "power_spawn"
+POWER_MOVE = "power_move"
+POWER_RESTING = "power_resting"
 
-# State Flower
-FLOWER_SPAWN = "flower_spawn"
-FLOWER_RESTING = "flower_resting"
-
-# State Mush
-MUSH_SPAWN = "mush_spawn"
-MUSH_MOVE = "mush_move"
 
 # State Level
 FREEZE = "freeze"
 NOTFREEZE = "notfreeze"
 INCASTLE = "incastle"
-INUNDER = "inunder"
+
 
 # State Brick
 BUMPED = "bumped"

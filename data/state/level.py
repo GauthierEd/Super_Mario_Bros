@@ -11,6 +11,7 @@ from .. components.power import *
 from .. components.ennemy import *
 from .. components.checkpoint import *
 from . import state
+from .. import setup
 
 class Level(state.State):
     def __init__(self):
@@ -20,6 +21,8 @@ class Level(state.State):
         self.next = None
         self.state = c.NOTFREEZE
         self.timeOut = False
+        self.transition = False
+        self.under = False
         self.current_update = current_time
         self.timeOut_timer = 0
         self.timeEnd_timer = 0
@@ -32,9 +35,14 @@ class Level(state.State):
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,(int(self.back_rect.width * c.BACKGROUND_SIZE_MULTIPLIER),int(self.back_rect.height * c.BACKGROUND_SIZE_MULTIPLIER)))
         self.back_rect = self.background.get_rect()
-        self.back_rect.x = 0
-        self.back_rect.y = 0
-        self.count_scroll = 0
+        width = self.back_rect.width
+        height = self.back_rect.height
+
+        self.level = pg.Surface((width,height)).convert()
+        self.level_rect = self.level.get_rect()
+        self.viewport = setup.SCREEN.get_rect(bottom = self.level_rect.bottom)
+        self.viewport.x = 0
+        
         
     def setup_mario(self):
         self.fireball = pg.sprite.Group()
@@ -135,6 +143,7 @@ class Level(state.State):
         brick_28 = BrickOverWorld(2688,136)
         brick_29 = BrickOverWorld(2704,136)
         brick_30 = BrickOverWorld(2736,136)
+        brick_74 = BrickInvisible(1021,120,self.power,"mushLife") # mushLife invisible
         # underGround
         brick_31 = BrickUnderground(3392,184)
         brick_32 = BrickUnderground(3392,168)
@@ -189,7 +198,7 @@ class Level(state.State):
                                         brick_45,brick_46,brick_47,brick_48,brick_49,brick_50,brick_51,brick_52,brick_53,
                                         brick_54,brick_55,brick_56,brick_57,brick_58,brick_59,brick_60,brick_61,brick_62,
                                         brick_63,brick_64,brick_65,brick_66,brick_67,brick_68,brick_69,brick_70,brick_71,
-                                        brick_72,brick_73)
+                                        brick_72,brick_73,brick_74)
        
         
     def setup_coin(self):
@@ -215,19 +224,19 @@ class Level(state.State):
         self.bigCoin = pg.sprite.Group(coin1,coin2,coin3,coin4,coin5,coin6,coin7,coin8,coin9,coin10,coin11,coin12,coin13,coin14,coin15,coin16,coin17,coin18,coin19)
 
     def setup_coin_brick(self):
-        coin_brick_1 = Coin_Brick(256,136,self.coin,"coin")
-        coin_brick_2 = Coin_Brick(336,136,self.power,"mush")
-        coin_brick_3 = Coin_Brick(368,136,self.coin,"coin")
-        coin_brick_4 = Coin_Brick(352,72,self.coin,"coin")
-        coin_brick_5 = Coin_Brick(1248,136,self.power,"mush")
-        coin_brick_6 = Coin_Brick(1504,72,self.coin,"coin")
-        coin_brick_7 = Coin_Brick(1696,136,self.coin,"coin")
-        coin_brick_8 = Coin_Brick(1744,136,self.coin,"coin")
-        coin_brick_9 = Coin_Brick(1792,136,self.coin,"coin")
-        coin_brick_10 = Coin_Brick(1744,72,self.coin,"coin")
-        coin_brick_12 = Coin_Brick(2064,72,self.coin,"coin")
-        coin_brick_13 = Coin_Brick(2080,72,self.coin,"coin")
-        coin_brick_14 = Coin_Brick(2720,136,self.coin,"coin")
+        coin_brick_1 = CoinBrickOverworld(256,136,self.coin,"coin")
+        coin_brick_2 = CoinBrickOverworld(336,136,self.power,"mush")
+        coin_brick_3 = CoinBrickOverworld(368,136,self.coin,"coin")
+        coin_brick_4 = CoinBrickOverworld(352,72,self.coin,"coin")
+        coin_brick_5 = CoinBrickOverworld(1248,136,self.power,"mush")
+        coin_brick_6 = CoinBrickOverworld(1504,72,self.coin,"coin")
+        coin_brick_7 = CoinBrickOverworld(1696,136,self.coin,"coin")
+        coin_brick_8 = CoinBrickOverworld(1744,136,self.coin,"coin")
+        coin_brick_9 = CoinBrickOverworld(1792,136,self.coin,"coin")
+        coin_brick_10 = CoinBrickOverworld(1744,72,self.coin,"coin")
+        coin_brick_12 = CoinBrickOverworld(2064,72,self.coin,"coin")
+        coin_brick_13 = CoinBrickOverworld(2080,72,self.coin,"coin")
+        coin_brick_14 = CoinBrickOverworld(2720,136,self.coin,"coin")
 
         self.coin_brick = pg.sprite.Group(coin_brick_1,coin_brick_2,coin_brick_3,coin_brick_4,coin_brick_5,coin_brick_6,
                                             coin_brick_7,coin_brick_8,coin_brick_9,coin_brick_10,coin_brick_12,
@@ -309,55 +318,67 @@ class Level(state.State):
     def update(self,keys,screen,current_time):
         self.current_update = current_time
         self.handleState(keys)
-        self.draw(screen)
-
-    def draw(self,screen):
-        if self.state == c.INUNDER and not self.mario.inUnder:
-            if self.under_timer == 0:
-                self.under_timer =  self.current_update
-            elif self.current_update - self.under_timer > 1000:
-                self.under_timer = 0
-                self.state = c.NOTFREEZE
-            screen.fill((0,0,0))
-        elif self.state == c.NOTFREEZE and self.mario.inUnder:
-            if self.under_timer == 0:
-                sound.pipe.play()
-                self.set_in_underground()
-                self.under_timer =  self.current_update
-            elif self.current_update - self.under_timer > 1000:
-                self.under_timer = 0
-                self.state = c.INUNDER
-            self.mario.vy = 0
-            screen.fill((0,0,0))
-        else:
-            self.draw_everything(screen)
+        self.draw_everything(screen)
 
     def handleState(self,keys):
         if self.state == c.NOTFREEZE:
             self.update_all_sprites(keys)
         elif self.state == c.FREEZE:
-            self.update_while_transition(keys)
+            self.update_while_transition_mario(keys)
         elif self.state == c.INCASTLE:
             self.update_while_castle(keys)
-        elif self.state == c.INUNDER:
-            self.update_while_under(keys)
     
-    def update_while_under(self,keys):
+    def draw_everything(self,screen):
+        self.level.blit(self.background, self.viewport,self.viewport)
+        self.level.blit(self.flag.image,self.flag.rect)
+        if not self.mario.inCastle:
+            self.level.blit(self.mario.image,(self.mario.rect.x,self.mario.rect.y))
+        if self.flagEnd.rect.top < 121 * c.BACKGROUND_SIZE_MULTIPLIER:
+            self.level.blit(self.flagEnd.image,self.flagEnd.rect)
+        self.ground.draw(self.level)
+        self.bigCoin.draw(self.level)
+        self.power.draw(self.level)
+        self.brick.draw(self.level)
+        self.ennemy.draw(self.level)
+        self.ennemy_death.draw(self.level)
+        self.coin_brick.draw(self.level)
+        self.fireball.draw(self.level)
+        self.checkpoint.draw(self.level)
+        self.coin.draw(self.level)
+        self.draw_score(self.level)
+        self.brick_piece.draw(self.level)
+
+        if not self.transition:
+            screen.blit(self.level,(0,0),self.viewport)
+            self.info.draw(screen)
+        else:
+            screen.fill((0,0,0))
+    
+    def update_all_sprites(self,keys):
         self.mario.update(keys)
         self.ground.update()
         self.brick.update()
         self.brick_piece.update()
+        self.coin_brick.update()
+        self.coin.update()
         self.bigCoin.update()
+        self.power.update(self.current_update)
+        self.ennemy.update()
+        self.ennemy_death.update()
         self.fireball.update()
+        self.checkpoint.update()
+        self.flag.update()
+        self.update_score()
         self.adjust_position_mario()
+        self.adjust_position_power()
+        self.adjust_position_ennemy()
         self.adjust_position_fireball()
         self.info.update(self.current_update,self.mario.state)
+        self.update_viewport()
+        self.check_if_mario_in_transition()
         self.check_if_change_state()
         self.check_if_timeout()
-        if not self.mario.inUnder and self.mario.canGoOverworld:
-            sound.pipe.play()
-            self.set_in_overworld()
-            
+        self.check_if_transition()
 
     def update_while_castle(self,keys):
         self.info.end_score()
@@ -374,41 +395,29 @@ class Level(state.State):
                 self.done = True
                 self.next = c.MAIN_MENU
         
-        
-    def update_while_transition(self,keys):
+    def update_while_transition_mario(self,keys):
         self.mario.update(keys)
         self.coin_brick.update()
         self.info.update(self.current_update,self.mario.state)
         self.check_if_mario_in_transition()
         self.check_if_change_state()
         self.check_if_timeout()
+        self.check_if_transition()
 
-
-    def update_all_sprites(self,keys):
-        self.mario.update(keys)
-        self.ground.update()
-        self.brick.update()
-        self.brick_piece.update()
-        self.coin_brick.update()
-        self.coin.update()
-        self.bigCoin.update()
-        self.power.update()
-        self.ennemy.update()
-        self.ennemy_death.update()
-        self.fireball.update()
-        self.checkpoint.update()
-        self.flag.update()
-        self.update_score()
-        self.adjust_position_mario()
-        self.adjust_position_power()
-        self.adjust_position_ennemy()
-        self.adjust_position_fireball()
-        self.info.update(self.current_update,self.mario.state)
-        if abs(self.back_rect.x) < self.back_rect.width - 1606:
-            self.update_background()
-        self.check_if_mario_in_transition()
-        self.check_if_change_state()
-        self.check_if_timeout()
+    def check_if_transition(self):
+        if self.transition:
+            if self.under_timer == 0:
+                sound.pipe.play()
+                self.under = not self.under
+                self.under_timer = self.current_update
+            elif self.current_update - self.under_timer > 1000:
+                self.under_timer = 0
+                self.state = c.NOTFREEZE
+                self.transition = False
+                if self.under:
+                    self.set_in_underground()
+                elif not self.under:
+                    self.set_in_overworld()
 
     def check_if_timeout(self):
         if int(info.game_info["time"]) == 99 and not self.timeOut:
@@ -461,55 +470,30 @@ class Level(state.State):
         if self.mario.state == c.TOBIG or self.mario.state == c.TORED or self.mario.state == c.TOSMALL:
             self.state = c.FREEZE
         elif self.mario.inCastle:
-            sound.count_time.play()
             self.state = c.INCASTLE
+            sound.count_time.play()
+        elif self.mario.inUnder and not self.under:
+            self.state = c.FREEZE
+            self.transition = True
+        elif self.mario.canGoOverworld and self.under:
+            self.state = c.FREEZE
+            self.transition = True
         else:
             self.state = c.NOTFREEZE
 
     def set_in_underground(self):
-       
-        self.mario.rect.x = 30 * c.BACKGROUND_SIZE_MULTIPLIER
+        self.mario.rect.x = 3425 * c.BACKGROUND_SIZE_MULTIPLIER
         self.mario.rect.y = 40 * c.BACKGROUND_SIZE_MULTIPLIER
-        self.back_rect.x = -9087
-        all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
-        for i in all_sprite:
-            i.rect.x += self.count_scroll
-        for i in all_sprite:
-            i.rect.x -= 9087
+        self.viewport.x = 3392 * c.BACKGROUND_SIZE_MULTIPLIER
     
     def set_in_overworld(self):
-        self.mario.rect.centerx = 380
+        self.mario.inUnder = False
+        self.mario.vx = 0
+        self.mario.rect.centerx = 2625 * c.BACKGROUND_SIZE_MULTIPLIER
         self.mario.rect.bottom = 168 * c.BACKGROUND_SIZE_MULTIPLIER
-        self.back_rect.x = -6628
-        all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
-        for i in all_sprite:
-            i.rect.x += 9087
-        for i in all_sprite:
-            i.rect.x -= 6628
-
-    def draw_everything(self,screen):
-        screen.blit(self.background,(self.back_rect.x,self.back_rect.y))
-        screen.blit(self.flag.image,self.flag.rect)
-        if not self.mario.inCastle:
-            screen.blit(self.mario.image,(self.mario.rect.x,self.mario.rect.y))
-        if self.flagEnd.rect.top < 121*c.BACKGROUND_SIZE_MULTIPLIER:
-            screen.blit(self.flagEnd.image,self.flagEnd.rect)
-        self.ground.draw(screen)
-        self.bigCoin.draw(screen)
-        self.power.draw(screen)
-        self.brick.draw(screen)
-        self.ennemy.draw(screen)
-        self.ennemy_death.draw(screen)
-        self.coin_brick.draw(screen)
-        self.fireball.draw(screen)
-        self.checkpoint.draw(screen)
-        self.coin.draw(screen)
-        self.draw_score(screen)
-        self.brick_piece.draw(screen)
-        self.info.draw(screen)
-
+        self.viewport.x = 2476 * c.BACKGROUND_SIZE_MULTIPLIER
         
-    def test_score(self,string,x,y):
+    def set_score(self,string,x,y):
         score = self.info.create_score(string,x,y)
         timer = self.current_update
         self.score.append(score)
@@ -530,31 +514,21 @@ class Level(state.State):
             for char in line:
                 char.rect.y -= 1
 
-        
-    def update_background(self):
+    def update_viewport(self):
         # Scroll Background si mario dépasse la moitié de l'écran
-        if self.mario.rect.x > c.WIDTH / 2 and self.mario.vx > 0: 
-            self.mario.rect.x -= round(self.mario.vx)
-            self.back_rect.x -= round(self.mario.vx)
-            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
-            for i in all_sprite:
-                i.rect.x -= round(self.mario.vx)
-            for line in self.score:
-                for char in line:
-                    char.rect.x -= round(self.mario.vx /2)
-            self.count_scroll += round(self.mario.vx)
+        if self.mario.rect.x < 3243 * c.BACKGROUND_SIZE_MULTIPLIER:
+            third = self.viewport.x + self.viewport.w / 3
+            mario_center = self.mario.rect.centerx
+            mario_right = self.mario.rect.right
 
-        # Commence le scrolle du backround
-        elif self.mario.rect.x > 250 and self.mario.vx > 0:
-            self.mario.rect.x -= round(self.mario.vx / 2)
-            self.back_rect.x -= round(self.mario.vx / 2)
-            all_sprite = pg.sprite.Group(self.ground_pipe_stair,self.brick,self.brick_piece,self.coin_brick,self.power,self.coin,self.all_ennemy,self.fireball,self.checkpoint,self.flag,self.flagEnd,self.bigCoin)
-            for i in all_sprite:
-                i.rect.x -= round(self.mario.vx / 2)
-            for line in self.score:
-                for char in line:
-                    char.rect.x -= round(self.mario.vx /2)
-            self.count_scroll += round(self.mario.vx / 2)
+            if self.mario.vx > 0 and mario_center >= third:
+                if mario_right < self.viewport.centerx:
+                    mult = 0.5
+                else:
+                    mult = 1
+                new = self.viewport.x + mult * self.mario.vx
+                highest = self.level_rect.w - self.viewport.w
+                self.viewport.x = min(highest,new)
 
     def change_mush_into_flower(self):
         for b in self.brick:
@@ -580,7 +554,7 @@ class Level(state.State):
             self.check_mario_x_collision()
 
         self.mario.rect.y += round(self.mario.vy)
-        if not self.mario.state == c.JUMPTODEATH:
+        if not self.mario.state == c.JUMPTODEATH and self.mario.transform == False:
             self.check_mario_y_collision()
 
 
@@ -614,10 +588,9 @@ class Level(state.State):
         elif hit_checkpoint:
             self.adjust_collision_checkpoint(hit_checkpoint)
 
-        if self.mario.rect.x < 0:
-            self.mario.rect.x = 0
-        elif self.mario.rect.right > c.WIDTH:
-            self.mario.rect.right = c.WIDTH
+        if self.mario.rect.x < self.viewport.x:
+            self.mario.rect.x = self.viewport.x
+        
         
 
 
@@ -648,36 +621,29 @@ class Level(state.State):
             sound.flag.play()
             self.mario.state = c.SLIDEFLAG
             self.flag.state = c.SLIDEFLAG
-            print(self.mario.rect.centery)
             if self.mario.rect.centery < 125:
-                print("1up")
                 info.game_info["lives"] += 1
                 sound.up.play()
 
             elif self.mario.rect.centery > 125 and self.mario.rect.centery < 168:
-                print("5000")
                 info.game_info["scores"] += 5000
-                self.test_score("5000",self.mario.rect.x+30,self.mario.rect.y )
+                self.set_score("5000",self.mario.rect.x+30,self.mario.rect.y )
 
             elif self.mario.rect.centery > 168 and self.mario.rect.centery < 302:
-                print("2000")
                 info.game_info["scores"] += 2000
-                self.test_score("2000",self.mario.rect.x+30,self.mario.rect.y)
+                self.set_score("2000",self.mario.rect.x+30,self.mario.rect.y)
 
             elif self.mario.rect.centery > 302 and self.mario.rect.centery < 375:
-                print("800")
                 info.game_info["scores"] += 800
-                self.test_score("800",self.mario.rect.x+30,self.mario.rect.y)
+                self.set_score("800",self.mario.rect.x+30,self.mario.rect.y)
 
             elif self.mario.rect.centery > 375 and self.mario.rect.centery < 455:
-                print("400")
                 info.game_info["scores"] += 400
-                self.test_score("400",self.mario.rect.x+30,self.mario.rect.y)
+                self.set_score("400",self.mario.rect.x+30,self.mario.rect.y)
 
             elif self.mario.rect.centery > 455 and self.mario.rect.centery < 493:
-                print("200")
                 info.game_info["scores"] += 200
-                self.test_score("200",self.mario.rect.x+30,self.mario.rect.y)
+                self.set_score("200",self.mario.rect.x+30,self.mario.rect.y)
             checkpoint.kill()
         elif checkpoint.name == "pipe":
             self.mario.canGoUnder = True
@@ -688,13 +654,13 @@ class Level(state.State):
         if self.mario.rect.right > ennemy.rect.left and self.mario.rect.left < ennemy.rect.left:
             if self.mario.invincible:
                 if ennemy.name == "gumba":
-                    self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy.name == "koopa":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
                 ennemy.jumpToDeath()
@@ -707,8 +673,9 @@ class Level(state.State):
                     ennemy.vx = 8
                     self.mario.vx -= 3
                 else:
-                    print("touche droite")
+                    
                     self.mario.state = c.TOSMALL
+                    self.mario.transform = True
                     self.change_flower_into_mush()
                     self.mario.setWasTouched()
                     sound.pipe.play()
@@ -727,14 +694,14 @@ class Level(state.State):
         elif self.mario.rect.left < ennemy.rect.right and self.mario.rect.right > ennemy.rect.right:
             if self.mario.invincible:
                 if ennemy.name == "gumba":
-                    self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
                     
                 elif ennemy.name == "koopa":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
                 ennemy.jumpToDeath()
@@ -747,8 +714,8 @@ class Level(state.State):
                     ennemy.vx = -8
                     self.mario.vx += 3
                 else:
-                    print("touche gauche")
                     self.mario.state = c.TOSMALL
+                    self.mario.transform = True
                     self.change_flower_into_mush()
                     self.mario.setWasTouched()
                     sound.pipe.play()
@@ -766,23 +733,29 @@ class Level(state.State):
     
     def adjust_position_x(self,collider):
         if self.mario.rect.right > collider.rect.left and self.mario.rect.left < collider.rect.left:
+            if collider.name == "invisible":
+                pass
             self.mario.rect.right = collider.rect.left
             self.mario.vx = 0
         elif self.mario.rect.left < collider.rect.right and self.mario.rect.right > collider.rect.right:
+            if collider.name == "invisible":
+                pass
             self.mario.rect.left = collider.rect.right
             self.mario.vx = 0
     
     def adjust_collision_power(self,power):
         info.game_info["scores"] += 1000
-        self.test_score("1000",power.rect.x,power.rect.y)
+        self.set_score("1000",power.rect.x,power.rect.y)
         if power.name == "mush":
             power.kill()
             sound.powerup.play()
             self.mario.state = c.TOBIG
+            self.mario.transform = True
             self.change_mush_into_flower()
         elif power.name == "flower":
             power.kill()
             self.mario.state = c.TORED
+            self.mario.transform = True
             sound.powerup.play()
         elif power.name == "star":
             power.kill()
@@ -790,6 +763,10 @@ class Level(state.State):
             sound.powerup.play()
             sound.star.play()
             self.mario.setInvincible()
+        elif power.name == "mushLife":
+            power.kill()
+            sound.up.play()
+            info.game_info["lives"] += 1
             
     def prevent_error_collision(self,block1,block2):
         dist_between_block1_and_mario = abs(block1.rect.centerx - self.mario.rect.centerx)
@@ -832,13 +809,13 @@ class Level(state.State):
         if self.mario.rect.bottom > ennemy.rect.top and self.mario.rect.top < ennemy.rect.top:
             if self.mario.invincible:
                 if ennemy.name == "gumba":
-                    self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy.name == "koopa":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
                 ennemy.jumpToDeath()
@@ -850,12 +827,12 @@ class Level(state.State):
                 self.mario.rect.bottom = ennemy.rect.top
                 if ennemy.name == "gumba":
                     self.ennemy.remove(ennemy)
-                    self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
                     ennemy.startToDeath()
                     self.ennemy_death.add(ennemy)
                 elif ennemy.name == "koopa":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     self.ennemy.remove(ennemy)
                     info.game_info["scores"] += 200
                     self.ennemy.add(Shell(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
@@ -872,21 +849,21 @@ class Level(state.State):
         elif self.mario.rect.top < ennemy.rect.bottom and self.mario.rect.bottom > ennemy.rect.bottom:
             if self.mario.invincible:
                 if ennemy.name == "gumba":
-                    self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy.name == "koopa":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
-                    self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
                 ennemy.jumpToDeath()
                 sound.kick.play()
                 self.ennemy_death.add(ennemy)
             elif self.mario.isBig:
-                print("touche bas")
                 self.mario.state = c.TOSMALL
+                self.mario.transform = True
                 self.change_flower_into_mush()
                 self.mario.setWasTouched()
                 sound.pipe.play()
@@ -911,6 +888,8 @@ class Level(state.State):
 
     def adjust_position_brick(self,collider):
         if self.mario.rect.bottom > collider.rect.top and self.mario.rect.top < collider.rect.top:
+            if collider.name == "invisible":
+                pass
             self.mario.vy = 0
             self.mario.rect.bottom = collider.rect.top
             self.mario.state = c.WALK
@@ -918,7 +897,7 @@ class Level(state.State):
 
         elif self.mario.rect.top < collider.rect.bottom and self.mario.rect.bottom > collider.rect.bottom:
             if self.mario.isBig:
-                if collider.content != "coin" and collider.content != "star" and collider.state != c.OPENED:
+                if collider.content != "coin" and collider.content != "star" and collider.content != "mushLife" and collider.state != c.OPENED:
                     sound.break_sound.play()
                     info.game_info["scores"] += 50
                     self.check_if_ennemy_on_brick(collider)
@@ -941,10 +920,12 @@ class Level(state.State):
                         self.check_if_ennemy_on_brick(collider)
                         if collider.content == "coin":
                             info.game_info["coin_count"] += 1
-                            self.test_score("200",collider.rect.x,collider.rect.y)
+                            self.set_score("200",collider.rect.x,collider.rect.y)
                             info.game_info["scores"] += 200
                             sound.coin.play()
                         elif collider.content == "star":
+                            sound.power_appear.play()
+                        elif collider.content == "mushLife":
                             sound.power_appear.play()
             else:
                 sound.bump.play()
@@ -953,10 +934,12 @@ class Level(state.State):
                     self.check_if_ennemy_on_brick(collider)
                     if collider.content == "coin":
                         info.game_info["coin_count"] += 1
-                        self.test_score("200",collider.rect.x,collider.rect.y)
+                        self.set_score("200",collider.rect.x,collider.rect.y)
                         info.game_info["scores"] += 200
                         sound.coin.play()
                     elif collider.content == "star":
+                        sound.power_appear.play()
+                    elif collider.content == "mushLife":
                         sound.power_appear.play()
             
             self.mario.vy = 3
@@ -975,7 +958,7 @@ class Level(state.State):
                 if collider.content == "coin":
                     info.game_info["coin_count"] += 1
                     info.game_info["scores"] += 200
-                    self.test_score("200",collider.rect.x,collider.rect.y)
+                    self.set_score("200",collider.rect.x,collider.rect.y)
                     sound.coin.play()
                 else:
                     sound.power_appear.play()
@@ -995,13 +978,13 @@ class Level(state.State):
         hit_ennemy = pg.sprite.spritecollideany(brick,self.ennemy)
         if hit_ennemy:
             if hit_ennemy.name == "gumba":
-                self.test_score("100",hit_ennemy.rect.x,hit_ennemy.rect.y)
+                self.set_score("100",hit_ennemy.rect.x,hit_ennemy.rect.y)
                 info.game_info["scores"] += 100
             elif hit_ennemy.name == "koopa":
-                self.test_score("200",hit_ennemy.rect.x,hit_ennemy.rect.y)
+                self.set_score("200",hit_ennemy.rect.x,hit_ennemy.rect.y)
                 info.game_info["scores"] += 200
             elif hit_ennemy.name == "shell":
-                self.test_score("200",hit_ennemy.rect.x,hit_ennemy.rect.y)
+                self.set_score("200",hit_ennemy.rect.x,hit_ennemy.rect.y)
                 info.game_info["scores"] += 200
             self.ennemy.remove(hit_ennemy)
             sound.kick.play()
@@ -1025,7 +1008,7 @@ class Level(state.State):
 
     def adjust_position_power(self):
         for m in self.power:
-            if m.name == "mush" and m.state != c.MUSH_SPAWN:
+            if (m.name == "mush" or m.name == "mushLife") and m.state != c.POWER_SPAWN:
                 self.power.remove(m)
                 m.rect.x += round(m.vx)
                 self.check_mush_collision_x(m)
@@ -1033,7 +1016,7 @@ class Level(state.State):
                 m.rect.y += round(m.vy)
                 self.check_mush_collision_y(m)
                 self.power.add(m)
-            elif m.name == "star" and m.state != c.STAR_SPAWN:
+            elif m.name == "star" and m.state != c.POWER_SPAWN:
                 m.rect.x += round(m.vx)
                 self.check_star_collision_x(m)
 
@@ -1109,14 +1092,14 @@ class Level(state.State):
 
     def adjust_position_power_y(self,power,collider):
         if power.rect.bottom > collider.rect.top and power.rect.top < collider.rect.top:
-            if power.name == "mush":
+            if power.name == "mush" or power.name == "mushLife":
                 power.vy = 0
             elif power.name == "star":
                 power.vy *= -1
             power.rect.bottom = collider.rect.top
 
         elif power.rect.top < collider.rect.bottom and power.rect.bottom > collider.rect.bottom:
-            if power.name == "mush":
+            if power.name == "mush" or power.name == "mushLife":
                 power.vy = 0
             elif power.name == "star":
                 power.vy *= -1
@@ -1124,8 +1107,6 @@ class Level(state.State):
             
 
 ######### ENNEMY COLLISION #########
-
-
     def adjust_position_ennemy(self):
         for e in self.ennemy:
             if e.state != c.DEATH:
@@ -1155,13 +1136,13 @@ class Level(state.State):
         if ennemy1.rect.right > ennemy2.rect.left and ennemy1.rect.left < ennemy2.rect.left:
             if ennemy1.name == "shell":
                 if ennemy2.name == "gumba":
-                    self.test_score("100",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy2.name == "koopa":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy2.name == "shell":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy2)
                 sound.kick.play()
@@ -1174,13 +1155,13 @@ class Level(state.State):
         elif ennemy1.rect.left < ennemy2.rect.right and ennemy1.rect.right > ennemy2.rect.right:
             if ennemy1.name == "shell":
                 if ennemy2.name == "gumba":
-                    self.test_score("100",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy2.name == "koopa":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy2.name == "shell":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy2)
                 sound.kick.play()
@@ -1229,13 +1210,13 @@ class Level(state.State):
         if ennemy1.rect.bottom > ennemy2.rect.top and ennemy1.rect.top < ennemy2.rect.top:
             if ennemy1.name == "shell":
                 if ennemy2.name == "gumba":
-                    self.test_score("100",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy2.name == "koopa":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy2.name == "shell":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy2)
                 sound.kick.play()
@@ -1248,13 +1229,13 @@ class Level(state.State):
         elif ennemy1.rect.top < ennemy2.rect.bottom and ennemy1.rect.bottom > ennemy2.rect.bottom:
             if ennemy1.name == "shell":
                 if ennemy2.name == "gumba":
-                    self.test_score("100",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 100
                 elif ennemy2.name == "koopa":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy2.name == "shell":
-                    self.test_score("200",ennemy2.rect.x,ennemy2.rect.y)
+                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy2)
                 sound.kick.play()
@@ -1291,13 +1272,13 @@ class Level(state.State):
 
     def adjust_collision_fireball_to_ennemy_x(self,fireball,ennemy):
         if ennemy.name == "gumba":
-            self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("100",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 100
         elif ennemy.name == "koopa":
-            self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 200
         elif ennemy.name == "shell":
-            self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 200
         if fireball.rect.right > ennemy.rect.left and fireball.rect.left < ennemy.rect.left:
             self.ennemy.remove(ennemy)
@@ -1354,13 +1335,13 @@ class Level(state.State):
     
     def adjust_position_fireball_to_ennemy_y(self,fireball,ennemy):
         if ennemy.name == "gumba":
-            self.test_score("100",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("100",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 100
         elif ennemy.name == "koopa":
-            self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 200
         elif ennemy.name == "shell":
-            self.test_score("200",ennemy.rect.x,ennemy.rect.y)
+            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
             info.game_info["scores"] += 200
         if fireball.rect.bottom > ennemy.rect.top and fireball.rect.top < ennemy.rect.top:
             self.ennemy.remove(ennemy)

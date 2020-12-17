@@ -1,15 +1,16 @@
 import pygame as pg
 from pygame.locals import *
 import data.constante as c
+import data.setup
 from data.state import level,state_load,state_menu,state_timeout,state_gameover
 
 
 
 class Game(object):
     def __init__(self,state):
-        pg.display.set_caption("Super Mario Bros")
-        self.screen = pg.display.set_mode((c.WIDTH,c.HEIGHT))
+        self.screen = pg.display.get_surface()
         self.running = 1
+        self.show_fps = False
         self.clock = pg.time.Clock()
         self.all_state = {
             c.MAIN_MENU : state_menu.Menu(),
@@ -27,6 +28,7 @@ class Game(object):
                 self.running = 0
             elif event.type == KEYDOWN:
                 self.keys = pg.key.get_pressed()
+                self.toggle_fps(event.key)
             elif event.type == KEYUP:
                 self.keys = pg.key.get_pressed()
     
@@ -43,6 +45,11 @@ class Game(object):
         self.state = self.all_state[state_name]
         self.state.startup(self.current_time)
         
+    def toggle_fps(self,key):
+        if key == K_F5:
+            self.show_fps = not self.show_fps
+            if not self.show_fps:
+                pg.display.set_caption("Super Mario Bros")
 
     def main(self):
         while self.running:
@@ -50,9 +57,13 @@ class Game(object):
             self.handle_event()
             self.update()    
             pg.display.flip()
+            if self.show_fps:
+                fps = self.clock.get_fps()
+                with_fps = "{} - {:.2f} FPS".format("Super Mario Bros", fps)
+                pg.display.set_caption(with_fps)
+
 
 if __name__ == "__main__":
-    pg.init()
     game = Game(c.MAIN_MENU)
     game.main()
     pg.quit()

@@ -96,8 +96,7 @@ class Gumba(pg.sprite.Sprite):
 
         if self.rect.y > c.HEIGHT:
             self.kill()
-        elif self.rect.x < 0:
-            self.kill()
+        
 
 
 class Koopa(pg.sprite.Sprite):
@@ -181,8 +180,7 @@ class Koopa(pg.sprite.Sprite):
 
         if self.rect.y > c.HEIGHT:
             self.kill()
-        elif self.rect.x < 0:
-            self.kill()
+        
 
 class Shell(pg.sprite.Sprite):
     def __init__(self,x,y,current,group = None,name = "shell"):
@@ -281,7 +279,6 @@ class Shell(pg.sprite.Sprite):
             self.rect.bottom = bottom
 
         if self.current_update - self.death_update > 5000:
-            print("born")
             self.death_update = self.current_update
             self.frame_index = 1
             left = self.rect.left
@@ -301,10 +298,6 @@ class Shell(pg.sprite.Sprite):
             self.state = c.RESTING
 
         if self.rect.y > c.HEIGHT:
-            self.kill()
-        elif self.rect.x < 0:
-            self.kill()
-        if self.rect.x > c.WIDTH:
             self.kill()
         
     def death(self):

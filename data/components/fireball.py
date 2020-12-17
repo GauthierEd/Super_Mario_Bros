@@ -53,7 +53,3 @@ class FireBall(pg.sprite.Sprite):
 
         if self.rect.y > c.HEIGHT:
             self.kill()
-        elif self.rect.x < 0:
-            self.kill()
-        elif self.rect.x > c.WIDTH:
-            self.kill()

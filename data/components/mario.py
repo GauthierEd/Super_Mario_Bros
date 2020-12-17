@@ -27,7 +27,8 @@ class Mario(pg.sprite.Sprite):
         self.gravity = c.GRAVITY
 
     def setup_booleen(self):
-        self.isjump = False
+        self.in_transition = False
+        self.allowJump = True
         self.right = True
         self.crouch = False
         self.isBig = False
@@ -277,7 +278,7 @@ class Mario(pg.sprite.Sprite):
         if self.rect.bottom >= 492:
             self.vy = 0
             self.right = False
-            self.rect.x += 42
+            self.rect.x = self.rect.right + 5
             self.state = c.WAITFLAG
         else:
             if self.current_update - self.last_update > 100 :
@@ -285,7 +286,6 @@ class Mario(pg.sprite.Sprite):
                 self.frame_index = 6 + (self.frame_index + 1) % 2
 
     def waitFlag(self):
-        
         if self.flag_timer == 0:
             self.flag_timer = self.current_update
             sound.end.play()
@@ -296,12 +296,11 @@ class Mario(pg.sprite.Sprite):
             self.state = c.WALKTOCASTLE
         
     def walkToCastle(self):
-        
         self.vy += self.gravity
         if self.current_update - self.last_update > 130:
             self.last_update = self.current_update 
             self.frame_index = (self.frame_index + 1) % 3
-        if self.rect.x > 470:
+        if self.rect.x > 3265 * c.BACKGROUND_SIZE_MULTIPLIER:
             self.vx = 0
             self.inCastle = True
             
@@ -329,7 +328,7 @@ class Mario(pg.sprite.Sprite):
                 self.vx += self.ax
 
     def jump(self,keys):
-        self.isjump = True
+        self.allowJump = False
         self.gravity = c.JUMP_GRAVITY
         self.vy += self.gravity
         
@@ -358,7 +357,12 @@ class Mario(pg.sprite.Sprite):
             self.fireball_timer = self.current_update
             self.castFireball()
 
+    def check_if_can_jump(self,keys):
+        if not keys[c.handleInput["saut"]]:
+            self.allowJump = True
+
     def standing(self,keys):
+        self.check_if_can_jump(keys)
         self.vy = 0
         self.vx = 0
         self.frame_index = 3
@@ -371,7 +375,7 @@ class Mario(pg.sprite.Sprite):
         elif keys[c.handleInput["droite"]]:
             self.state = c.WALK
         elif keys[c.handleInput["saut"]]:
-            if not self.isjump:
+            if  self.allowJump:
                 if self.isBig:
                     sound.big_jump.play()
                 else:
@@ -382,6 +386,7 @@ class Mario(pg.sprite.Sprite):
             self.crouch = True
             if self.canGoUnder:
                 self.inUnder = True
+               
 
         if not keys[c.handleInput["bas"]]:
             self.crouch = False
@@ -392,6 +397,7 @@ class Mario(pg.sprite.Sprite):
         return animation
 
     def walking(self,keys):
+        self.check_if_can_jump(keys)
         if self.canGoOverworld:
             self.inUnder = False
             
@@ -403,7 +409,7 @@ class Mario(pg.sprite.Sprite):
             self.check_if_fireball()
 
         if keys[c.handleInput["saut"]]:
-            if not self.isjump:
+            if self.allowJump:
                 if self.isBig:
                     sound.big_jump.play()
                 else:
@@ -411,7 +417,7 @@ class Mario(pg.sprite.Sprite):
                 self.state = c.JUMP
                 self.vy = c.JUMP_VEL
 
-        elif keys[c.handleInput["gauche"]]:
+        if keys[c.handleInput["gauche"]]:
             self.outOfCrouch()
             self.right = False
             if self.vx <= 0:
