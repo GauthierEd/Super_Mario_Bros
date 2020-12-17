@@ -3,12 +3,11 @@ from .. import constante as c
 from . power import *
 from . coin import *
 
-class Coin_Brick(pg.sprite.Sprite):
-    def __init__(self,x,y,group = None,content = None):
+class CoinBrick(pg.sprite.Sprite):
+    def __init__(self,x,y,group = None,content = None,name = "overworld"):
         pg.sprite.Sprite.__init__(self)
         self.sprite = pg.image.load("images/sprite_block.png")
         self.load_img()
-        self.frame_index = 0
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
@@ -19,6 +18,7 @@ class Coin_Brick(pg.sprite.Sprite):
         self.last_update = 0
         self.content = content
         self.group = group
+        self.name = name
 
     def getImage(self,x,y,w,h):
         image = pg.Surface((w,h))
@@ -28,12 +28,7 @@ class Coin_Brick(pg.sprite.Sprite):
         return image
 
     def load_img(self):
-        self.frame = []
-
-        self.frame.append(self.getImage(80,112,16,16)) # coin brick [1]
-        self.frame.append(self.getImage(96,112,16,16)) # coin brick [2]
-        self.frame.append(self.getImage(112,112,16,16)) # coin brick [3]
-        self.frame.append(self.getImage(128,112,16,16)) # coin brick opened
+        pass
 
     def startBump(self):
         self.frame_index = 3
@@ -56,13 +51,15 @@ class Coin_Brick(pg.sprite.Sprite):
             self.rect.y = self.initial_height
             self.vy = 0
             if self.content == "mush":
-                self.group.add(Mushroom(self.rect.x,self.rect.y,"mush"))
+                self.group.add(Mushroom(self.rect.x,self.rect.y))
             elif self.content == "flower":
-                self.group.add(Flower(self.rect.x,self.rect.y,"flower"))
+                self.group.add(Flower(self.rect.x,self.rect.y))
             elif self.content == "coin":
                 self.group.add(Coin(self.rect.centerx,self.rect.y))
             elif self.content == "star":
-                self.group.add(Star(self.rect.centerx,self.rect.y,"star"))
+                self.group.add(Star(self.rect.centerx,self.rect.y))
+            elif self.content == "mushLife":
+                self.group.add(MushroomLife(self.rect.x,self.rect.y))
             self.state = c.OPENED
 
     def time_between_2_date(self,t1,t2):
@@ -93,3 +90,27 @@ class Coin_Brick(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left = left
         self.rect.bottom = bottom
+
+class CoinBrickOverworld(CoinBrick):
+    def __init__(self,x,y,group = None,content = None,name = "overworld"):
+        CoinBrick.__init__(self,x,y,group,content,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(80,112,16,16)) # coin brick [1]
+        self.frame.append(self.getImage(96,112,16,16)) # coin brick [2]
+        self.frame.append(self.getImage(112,112,16,16)) # coin brick [3]
+        self.frame.append(self.getImage(128,112,16,16)) # coin brick opened
+
+class CoinBrickUnderground(CoinBrick):
+    def __init__(self,x,y,group = None,content = None,name = "underground"):
+        CoinBrick.__init__(self,x,y,group,content,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(80,128,16,16)) # coin brick [1]
+        self.frame.append(self.getImage(96,128,16,16)) # coin brick [2]
+        self.frame.append(self.getImage(112,128,16,16)) # coin brick [3]
+        self.frame.append(self.getImage(144,128,16,16)) # coin brick opened
