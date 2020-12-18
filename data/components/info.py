@@ -7,9 +7,11 @@ from .coin import flash_coin
 
 game_info = {
     "coin_count" : 0,
-    "lives" : 3,
+    "mario_lifes" : 3,
+    "luigi_lifes" : 3,
     "time" : 401,
     "scores": 0,
+    "multi": False,
 }
 
 
@@ -29,6 +31,9 @@ class Info(object):
         self.setup_info()
         self.setup_count_coin()
         self.setup_mario_life()
+        self.setup_mario()
+        self.setup_luigi()
+        self.setup_luigi_life()
         self.setup_load_world()
         self.setup_gameover()
         self.setup_timeout()
@@ -100,25 +105,37 @@ class Info(object):
             char.rect.x = x + (char.rect.width + 3) * i
     
     def setup_info(self):
-        mario = []
         world = []
         level = []
         time = []
-        self.create_sentence(mario,"MARIO",60,30)
+        
         self.create_sentence(world,"WORLD",450,30)
         self.create_sentence(level,"1-1",480,60)
         self.create_sentence(time,"TIME",650,30)
 
-        self.info = [mario,world,level,time]
+        self.info = [world,level,time]
+
+    def setup_mario(self):
+        self.mario_word = []
+        self.create_sentence(self.mario_word,"MARIO",60,30)
+    
+    def setup_luigi(self):
+        self.luigi_word = []
+        self.create_sentence(self.luigi_word,"LUIGI",60,30)
 
     def setup_load_world(self):
         self.load_world = []
         self.create_sentence(self.load_world,"WORLD 1-1",270,220)
 
     def setup_mario_life(self):
-        self.life = []
-        self.create_sentence(self.life,"*   " + str(game_info["lives"]),350,300)
+        self.mario_life = []
+        self.create_sentence(self.mario_life,"*   " + str(game_info["mario_lifes"]),350,300)
         self.mario = mario.Mario(280,325)
+
+    def setup_luigi_life(self):
+        self.luigi_life = []
+        self.create_sentence(self.luigi_life,"*  " + str(game_info["luigi_lifes"]),350,300)
+        self.luigi = mario.Luigi(280,325)
 
     def setup_gameover(self):
         self.gameover = []
@@ -211,7 +228,9 @@ class Info(object):
         if game_info["coin_count"] == 100:
             sound.up.play()
             game_info["coin_count"] = 0
-            game_info["lives"] += 1
+            game_info["mario_lifes"] += 1
+            if game_info["multi"]:
+                game_info["luigi_lifes"] += 1
 
     def end_score(self):
         if game_info["time"] > 0:
@@ -225,8 +244,6 @@ class Info(object):
             self.draw_main_menu(screen)
         elif self.state == c.LEVEL:
             self.draw_level(screen)
-        elif self.state == c.LOAD:
-            self.draw_load(screen)
         elif self.state == c.GAMEOVER:
             self.draw_gameover(screen)
         elif self.state == c.TIMEOUT:
@@ -236,6 +253,9 @@ class Info(object):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)
+
+        for char in self.mario_word:
+            screen.blit(char.image,char.rect)
 
         for char in self.coin_total:
             screen.blit(char.image,char.rect)
@@ -255,6 +275,9 @@ class Info(object):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)
+        
+        for char in self.mario_word:
+            screen.blit(char.image,char.rect)
 
         for char in self.coin_total:
             screen.blit(char.image,char.rect)
@@ -275,6 +298,9 @@ class Info(object):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)
+        
+        for char in self.mario_word:
+            screen.blit(char.image,char.rect)
 
         for char in self.coin_total:
             screen.blit(char.image,char.rect)
@@ -285,6 +311,9 @@ class Info(object):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)
+        
+        for char in self.mario_word:
+            screen.blit(char.image,char.rect)
 
         for char in self.coin_total:
             screen.blit(char.image,char.rect)
@@ -297,15 +326,14 @@ class Info(object):
 
         screen.blit(self.flash_coin.image,self.flash_coin.rect)
 
-    def draw_load(self,screen):
+    def draw_load_mario(self,screen):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)
+        for char in self.mario_word:
+             screen.blit(char.image,char.rect)
 
         for char in self.coin_total:
-            screen.blit(char.image,char.rect)
-        
-        for char in self.life:
             screen.blit(char.image,char.rect)
         
         for char in self.score:
@@ -314,5 +342,31 @@ class Info(object):
         for char in self.load_world:
             screen.blit(char.image,char.rect)
         
-        screen.blit(self.mario.image,self.mario.rect)
         screen.blit(self.flash_coin.image,self.flash_coin.rect)
+
+        screen.blit(self.mario.image,self.mario.rect)
+        for char in self.mario_life:
+            screen.blit(char.image,char.rect)
+        
+    def draw_load_luigi(self,screen):
+        for text in self.info:
+            for char in text:
+                screen.blit(char.image,char.rect)
+
+        for char in self.luigi_word:
+             screen.blit(char.image,char.rect)
+
+        for char in self.coin_total:
+            screen.blit(char.image,char.rect)
+        
+        for char in self.score:
+            screen.blit(char.image,char.rect)
+        
+        for char in self.load_world:
+            screen.blit(char.image,char.rect)
+        
+        screen.blit(self.flash_coin.image,self.flash_coin.rect)
+
+        screen.blit(self.luigi.image,self.mario.rect)
+        for char in self.luigi_life:
+            screen.blit(char.image,char.rect)

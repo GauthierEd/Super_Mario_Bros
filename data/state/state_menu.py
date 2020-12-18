@@ -23,9 +23,11 @@ class Menu(state.State):
     def setup_game_info(self):
         info.game_info = {
             "coin_count" : 0,
-            "lives" : 3,
+            "mario_lifes" : 3,
+            "luigi_lifes" : 3,
             "time" : 401,
             "scores": 0,
+            "multi": False,
         }
 
     def setup_mario(self):
@@ -79,9 +81,11 @@ class Menu(state.State):
         
         elif keys[K_RETURN]:
             if self.button_rect.y == 380:
+                info.game_info["multi"] = False
                 self.done = True
             elif self.button_rect.y == 430:
                 self.done = True
+                info.game_info["multi"] = True
 
         self.draw_everything(screen)
 

@@ -4,10 +4,11 @@ from .. import sound
 from .fireball import * 
 
 
-class Mario(pg.sprite.Sprite):
-    def __init__(self,x,y,group = None):
+class Perso(pg.sprite.Sprite):
+    def __init__(self,x,y,group = None,name = None):
         pg.sprite.Sprite.__init__(self)
         self.sprite = pg.image.load("images\sprite_perso.png")
+        self.name = name
         self.load_image()
         self.setup_booleen()
         self.setup_force()
@@ -21,6 +22,10 @@ class Mario(pg.sprite.Sprite):
         
         
     def setup_force(self):
+        if self.name == "mario":
+            self.input = c.inputMario
+        elif self.name == "luigi":
+            self.input = c.inputLuigi
         self.ax = c.WALK_ACC
         self.vx = 0
         self.vy = 0
@@ -85,37 +90,69 @@ class Mario(pg.sprite.Sprite):
         self.inv3_big_left_frame = []
 
         self.frame = []
+        if self.name == "mario":
+            # small right frame 
+            self.small_right_frame.append(self.getImage(98,35,13,15)) # small right walk [0]
+            self.small_right_frame.append(self.getImage(117,34,11,16)) # small right walk [1]
+            self.small_right_frame.append(self.getImage(131,34,15,16))  # small right walk [2]
+            self.small_right_frame.append(self.getImage(82,34,12,16)) # small right standing 
+            self.small_right_frame.append(self.getImage(165,34,16,16)) # small right jump
+            self.small_right_frame.append(self.getImage(149,34,13,16)) # small right turn around
+            self.small_right_frame.append(self.getImage(201,34,13,16)) # small right flag [0]
+            self.small_right_frame.append(self.getImage(218,35,12,15)) # small right flag [1]
+            self.small_right_frame.append(self.getImage(183,34,14,14)) # small death
 
-        # small right frame
-        self.small_right_frame.append(self.getImage(98,35,13,15)) # small right walk [0]
-        self.small_right_frame.append(self.getImage(117,34,11,16)) # small right walk [1]
-        self.small_right_frame.append(self.getImage(131,34,15,16))  # small right walk [2]
-        self.small_right_frame.append(self.getImage(82,34,12,16)) # small right standing 
-        self.small_right_frame.append(self.getImage(165,34,16,16)) # small right jump
-        self.small_right_frame.append(self.getImage(149,34,13,16)) # small right turn around
-        self.small_right_frame.append(self.getImage(201,34,13,16)) # small right flag [0]
-        self.small_right_frame.append(self.getImage(218,35,12,15)) # small right flag [1]
-        self.small_right_frame.append(self.getImage(183,34,14,14)) # small death
+            # small left frame
+            for frame in self.small_right_frame:
+                self.small_left_frame.append(pg.transform.flip(frame,True,False))
 
-        # small left frame
-        for frame in self.small_right_frame:
-            self.small_left_frame.append(pg.transform.flip(frame,True,False))
+            # big right frame
+            self.big_right_frame.append(self.getImage(97,3,16,30)) # big right walk [0]
+            self.big_right_frame.append(self.getImage(115,2,14,31)) # big right walk [1]
+            self.big_right_frame.append(self.getImage(131,1,16,32)) # big right walk [2]
+            self.big_right_frame.append(self.getImage(80,1,16,32)) # big right standing
+            self.big_right_frame.append(self.getImage(165,1,16,32)) # big right jump
+            self.big_right_frame.append(self.getImage(148,1,16,32)) # big right turn around
+            self.big_right_frame.append(self.getImage(201,3,14,30)) # big right flag [0]
+            self.big_right_frame.append(self.getImage(218,3,14,27)) # big right flag [0]
+            self.big_right_frame.append(self.getImage(182,11,16,22)) # big crouch
+            self.big_right_frame.append(self.getImage(335,9,16,24)) # medium
 
-        # big right frame
-        self.big_right_frame.append(self.getImage(97,3,16,30)) # big right walk [0]
-        self.big_right_frame.append(self.getImage(115,2,14,31)) # big right walk [1]
-        self.big_right_frame.append(self.getImage(131,1,16,32)) # big right walk [2]
-        self.big_right_frame.append(self.getImage(80,1,16,32)) # big right standing
-        self.big_right_frame.append(self.getImage(165,1,16,32)) # big right jump
-        self.big_right_frame.append(self.getImage(148,1,16,32)) # big right turn around
-        self.big_right_frame.append(self.getImage(201,3,14,30)) # big right flag [0]
-        self.big_right_frame.append(self.getImage(218,3,14,27)) # big right flag [0]
-        self.big_right_frame.append(self.getImage(182,11,16,22)) # big crouch
-        self.big_right_frame.append(self.getImage(335,9,16,24)) # medium
+            # big left frame
+            for frame in self.big_right_frame:
+                self.big_left_frame.append(pg.transform.flip(frame,True,False))
+        elif self.name == "luigi":
+            # small right frame
+            self.small_right_frame.append(self.getImage(98,100,13,15)) # small right walk [0]
+            self.small_right_frame.append(self.getImage(117,99,11,16)) # small right walk [1]
+            self.small_right_frame.append(self.getImage(131,99,15,16))  # small right walk [2]
+            self.small_right_frame.append(self.getImage(82,99,12,16)) # small right standing 
+            self.small_right_frame.append(self.getImage(165,99,16,16)) # small right jump
+            self.small_right_frame.append(self.getImage(149,99,13,16)) # small right turn around
+            self.small_right_frame.append(self.getImage(201,99,13,16)) # small right flag [0]
+            self.small_right_frame.append(self.getImage(218,100,12,15)) # small right flag [1]
+            self.small_right_frame.append(self.getImage(183,99,14,14)) # small death
 
-        # big left frame
-        for frame in self.big_right_frame:
-            self.big_left_frame.append(pg.transform.flip(frame,True,False))
+            # small left frame
+            for frame in self.small_right_frame:
+                self.small_left_frame.append(pg.transform.flip(frame,True,False))
+
+            # big right frame
+            self.big_right_frame.append(self.getImage(97,68,16,30)) # big right walk [0]
+            self.big_right_frame.append(self.getImage(115,67,14,31)) # big right walk [1]
+            self.big_right_frame.append(self.getImage(131,66,16,32)) # big right walk [2]
+            self.big_right_frame.append(self.getImage(80,66,16,32)) # big right standing
+            self.big_right_frame.append(self.getImage(165,66,16,32)) # big right jump
+            self.big_right_frame.append(self.getImage(148,66,16,32)) # big right turn around
+            self.big_right_frame.append(self.getImage(201,68,14,30)) # big right flag [0]
+            self.big_right_frame.append(self.getImage(218,68,14,27)) # big right flag [0]
+            self.big_right_frame.append(self.getImage(182,76,16,22)) # big crouch
+            self.big_right_frame.append(self.getImage(335,74,16,24)) # medium
+
+            # big left frame
+            for frame in self.big_right_frame:
+                self.big_left_frame.append(pg.transform.flip(frame,True,False))
+
 
         # big red right frame
         self.red_big_right_frame.append(self.getImage(97,131,16,30)) # red right walk [0]
@@ -317,13 +354,13 @@ class Mario(pg.sprite.Sprite):
         if self.vy < c.MAX_VEL_Y:
             self.vy += self.gravity
 
-        if keys[c.handleInput["action"]]:
+        if keys[self.input["action"]]:
             self.check_if_fireball()
 
-        if keys[c.handleInput["gauche"]]:
+        if keys[self.input["gauche"]]:
             if self.vx > (c.MAX_WALK_SPEED * -1):
                 self.vx += -self.ax
-        elif keys[c.handleInput["droite"]]:
+        elif keys[self.input["droite"]]:
              if self.vx < c.MAX_WALK_SPEED:
                 self.vx += self.ax
 
@@ -338,17 +375,17 @@ class Mario(pg.sprite.Sprite):
             self.gravity = c.GRAVITY
             self.state = c.FALL
 
-        if keys[c.handleInput["action"]]:
+        if keys[self.input["action"]]:
             self.check_if_fireball()
 
-        if keys[c.handleInput["gauche"]]:
+        if keys[self.input["gauche"]]:
             if self.vx > (c.MAX_WALK_SPEED * -1):
                 self.vx += -self.ax
-        elif keys[c.handleInput["droite"]]:
+        elif keys[self.input["droite"]]:
              if self.vx < c.MAX_WALK_SPEED:
                 self.vx += self.ax
 
-        if not keys[c.handleInput["saut"]]:
+        if not keys[self.input["saut"]]:
             self.gravity = c.GRAVITY
             self.state = c.FALL
 
@@ -358,7 +395,7 @@ class Mario(pg.sprite.Sprite):
             self.castFireball()
 
     def check_if_can_jump(self,keys):
-        if not keys[c.handleInput["saut"]]:
+        if not keys[self.input["saut"]]:
             self.allowJump = True
 
     def standing(self,keys):
@@ -367,14 +404,14 @@ class Mario(pg.sprite.Sprite):
         self.vx = 0
         self.frame_index = 3
 
-        if keys[c.handleInput["action"]]:
+        if keys[self.input["action"]]:
             self.check_if_fireball()
 
-        if keys[c.handleInput["gauche"]]:
+        if keys[self.input["gauche"]]:
             self.state = c.WALK
-        elif keys[c.handleInput["droite"]]:
+        elif keys[self.input["droite"]]:
             self.state = c.WALK
-        elif keys[c.handleInput["saut"]]:
+        elif keys[self.input["saut"]]:
             if  self.allowJump:
                 if self.isBig:
                     sound.big_jump.play()
@@ -382,13 +419,13 @@ class Mario(pg.sprite.Sprite):
                     sound.small_jump.play()
                 self.state = c.JUMP
                 self.vy = c.JUMP_VEL
-        elif keys[c.handleInput["bas"]]:
+        elif keys[self.input["bas"]]:
             self.crouch = True
             if self.canGoUnder:
                 self.inUnder = True
                
 
-        if not keys[c.handleInput["bas"]]:
+        if not keys[self.input["bas"]]:
             self.crouch = False
 
     def calculate_speed_animation(self):
@@ -405,10 +442,10 @@ class Mario(pg.sprite.Sprite):
             self.last_update = self.current_update 
             self.frame_index = (self.frame_index + 1) % 3
         
-        if keys[c.handleInput["action"]]:
+        if keys[self.input["action"]]:
             self.check_if_fireball()
 
-        if keys[c.handleInput["saut"]]:
+        if keys[self.input["saut"]]:
             if self.allowJump:
                 if self.isBig:
                     sound.big_jump.play()
@@ -417,7 +454,7 @@ class Mario(pg.sprite.Sprite):
                 self.state = c.JUMP
                 self.vy = c.JUMP_VEL
 
-        if keys[c.handleInput["gauche"]]:
+        if keys[self.input["gauche"]]:
             self.outOfCrouch()
             self.right = False
             if self.vx <= 0:
@@ -429,7 +466,7 @@ class Mario(pg.sprite.Sprite):
             if self.vx > (c.MAX_WALK_SPEED * -1):
                 self.vx += -self.ax
 
-        elif keys[c.handleInput["droite"]]:
+        elif keys[self.input["droite"]]:
             self.outOfCrouch()
             self.right = True
             if self.vx >= 0:
@@ -730,13 +767,10 @@ class Mario(pg.sprite.Sprite):
                 sound.main.play(-1)
                 self.invincible = False
                 if self.power:
-                    print("red")
                     self.frame = self.red_big_frame
                 elif self.isBig:
-                    print("big")
                     self.frame = self.big_frame
                 else:
-                    print("small")
                     self.frame = self.small_frame
 
         
@@ -775,3 +809,21 @@ class Mario(pg.sprite.Sprite):
         self.check_if_invincible()
         self.check_if_wasTouched()
         self.animation()
+
+class Mario(Perso):
+    def __init__(self,x,y,group =None,name = "mario"):
+        Perso.__init__(self,x,y,group,name)
+        
+
+class Luigi(Perso):
+    def __init__(self,x,y,group =None,name = "luigi"):
+        Perso.__init__(self,x,y,group,name)
+    
+    
+        
+        
+        
+
+        
+    
+

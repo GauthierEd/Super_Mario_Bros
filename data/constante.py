@@ -51,12 +51,20 @@ GRAVITY = 1
 JUMP_GRAVITY = 0.31
 MAX_VEL_Y = 11
 
-handleInput = {
+inputMario = {
     "saut" : K_UP,
     "bas" : K_DOWN,
     "droite": K_RIGHT,
     "gauche" :K_LEFT,
     "action" : K_SPACE,
+}
+
+inputLuigi = {
+    "saut" : K_z,
+    "bas" : K_s,
+    "droite": K_d,
+    "gauche": K_q,
+    "action" : K_r,
 }
 
 WIDTH = 800
