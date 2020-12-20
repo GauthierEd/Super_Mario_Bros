@@ -42,7 +42,7 @@ class Level(state.State):
         self.level = pg.Surface((width,height)).convert()
         self.level_rect = self.level.get_rect()
         self.viewport = setup.SCREEN.get_rect(bottom = self.level_rect.bottom)
-        self.viewport.x = 0
+        self.viewport.x = 8000
         
         
     def setup_mario(self):
@@ -58,12 +58,12 @@ class Level(state.State):
         else:
             self.player = []
             if info.game_info["mario_lifes"] > 0:
-                self.mario = Mario(100,c.GROUND_HEIGHT,self.fireball_mario)
+                self.mario = Mario(8200,c.GROUND_HEIGHT,self.fireball_mario)
                 self.mario_death_timer = 0
                 self.mario_test = True
                 self.player.append(self.mario)
             if info.game_info["luigi_lifes"] > 0:
-                self.luigi = Luigi(50,c.GROUND_HEIGHT,self.fireball_luigi)
+                self.luigi = Luigi(8200,c.GROUND_HEIGHT,self.fireball_luigi)
                 self.luigi_death_timer = 0
                 self.luigi_test = True
                 self.player.append(self.luigi)

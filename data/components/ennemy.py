@@ -1,5 +1,21 @@
 import pygame as pg
 from .. import constante as c
+"""
+__init__ :  sprite
+            load_img
+            self.image
+            self.rect
+            x
+            y
+            vx # diff for gumba and koopa
+            vy = 0 
+            gravity
+            state
+            name
+            current_update
+            last_update
+            death_update
+"""
 
 class Gumba(pg.sprite.Sprite):
     def __init__(self,x,y,direction,name = "gumba"):
