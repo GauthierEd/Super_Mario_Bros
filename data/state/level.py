@@ -32,7 +32,7 @@ class Level(state.State):
         self.info = info.Info(c.LEVEL)
 
     def setup_background(self):
-        self.background = pg.image.load("images/fond_1.png")
+        self.background = pg.image.load("images/fond_1.png").convert()
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,(int(self.back_rect.width * c.BACKGROUND_SIZE_MULTIPLIER),int(self.back_rect.height * c.BACKGROUND_SIZE_MULTIPLIER)))
         self.back_rect = self.background.get_rect()
@@ -56,13 +56,18 @@ class Level(state.State):
             self.player = [self.mario]
             self.mario_test = True
         else:
-            self.mario = Mario(100,c.GROUND_HEIGHT,self.fireball_mario)
-            self.mario_death_timer = 0
-            self.luigi = Luigi(50,c.GROUND_HEIGHT,self.fireball_luigi)
-            self.luigi_death_timer = 0
-            self.player = [self.mario,self.luigi]
-            self.luigi_test = True
-            self.mario_test = True
+            self.player = []
+            if info.game_info["mario_lifes"] > 0:
+                self.mario = Mario(100,c.GROUND_HEIGHT,self.fireball_mario)
+                self.mario_death_timer = 0
+                self.mario_test = True
+                self.player.append(self.mario)
+            if info.game_info["luigi_lifes"] > 0:
+                self.luigi = Luigi(50,c.GROUND_HEIGHT,self.fireball_luigi)
+                self.luigi_death_timer = 0
+                self.luigi_test = True
+                self.player.append(self.luigi)
+            
 
     def setup_ground(self):
         ground_1 = Collider(0,c.GROUND_HEIGHT,1104,24)
@@ -554,6 +559,7 @@ class Level(state.State):
             
             if info.game_info["mario_lifes"] == 0 and info.game_info["luigi_lifes"] == 0:
                 self.next = c.GAMEOVER
+                self.done = True
             
     def check_if_mario_in_transition(self):
         if not self.multi:
@@ -591,7 +597,7 @@ class Level(state.State):
         self.viewport.x = 3392 * c.BACKGROUND_SIZE_MULTIPLIER
         if self.multi:
             self.luigi.rect.x = 3425 * c.BACKGROUND_SIZE_MULTIPLIER
-            self.mario.rect.y = 20 * c.BACKGROUND_SIZE_MULTIPLIER
+            self.luigi.rect.y = 20 * c.BACKGROUND_SIZE_MULTIPLIER
     
     def set_in_overworld(self):
         if self.multi:
@@ -753,9 +759,10 @@ class Level(state.State):
         elif checkpoint.name == "7":
             self.ennemy.add(self.ennemy_g7)
             checkpoint.kill()
-        elif checkpoint.name == "8" and player.state != c.SLIDEFLAG:
-            sound.main.stop()
-            sound.flag.play()
+        elif checkpoint.name == "8" and player.state != c.SLIDEFLAG and player.state != c.WAITFLAG:
+            if (self.luigi.state != c.SLIDEFLAG and self.luigi.state != c.WAITFLAG) and (self.mario.state != c.SLIDEFLAG and self.mario.state != c.WAITFLAG):
+                sound.main.stop()
+                sound.flag.play()
             player.state = c.SLIDEFLAG
             if self.flag.state != c.SLIDEFLAG:
                 self.flag.state = c.SLIDEFLAG
@@ -904,7 +911,7 @@ class Level(state.State):
         elif power.name == "mushLife":
             power.kill()
             sound.up.play()
-            info.game_info[str(player.name)+"_lives"] += 1
+            info.game_info[str(player.name)+"_lifes"] += 1
             
     def prevent_error_collision(self,block1,block2,player):
         dist_between_block1_and_mario = abs(block1.rect.centerx - player.rect.centerx)

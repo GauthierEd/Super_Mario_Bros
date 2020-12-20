@@ -13,7 +13,7 @@ class checkPoint(pg.sprite.Sprite):
 class FlagEnd(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.image = self.getImage(129,2,13,14)
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
@@ -50,7 +50,7 @@ class FlagEnd(pg.sprite.Sprite):
 class Flag(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

@@ -55,8 +55,9 @@ class Game(object):
         while self.running:
             self.clock.tick(c.FPS)
             self.handle_event()
-            self.update()    
-            pg.display.flip()
+            self.update()   
+            pg.display.update()
+            
             if self.show_fps:
                 fps = self.clock.get_fps()
                 with_fps = "{} - {:.2f} FPS".format("Super Mario Bros", fps)

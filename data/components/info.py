@@ -24,7 +24,7 @@ class Character(pg.sprite.Sprite):
 
 class Info(object):
     def __init__(self,state):
-        self.sprite = pg.image.load("images/sprite_text.png")
+        self.sprite = pg.image.load("images/sprite_text.png").convert_alpha()
         self.setup_letter()
         self.state = state
         self.setup_main_menu()

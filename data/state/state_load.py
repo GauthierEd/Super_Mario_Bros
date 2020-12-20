@@ -38,19 +38,40 @@ class Load(state.State):
                 self.done = True
                 sound.main.play(-1)
         else:
-            if current_time - self.current_update < 3000:
-                self.info.update(current_time)
-                self.draw_everything(screen)
-                self.draw_mario(screen)
-            elif current_time - self.current_update < 3500:
-                screen.fill((0,0,0))
-            elif current_time - self.current_update < 6500:
-                self.info.update(current_time)
-                self.draw_everything(screen)
-                self.draw_luigi(screen)
-            elif current_time - self.current_update < 7000:
-                screen.fill((0,0,0))
-            else:
-                self.done = True
-                sound.main.play(-1)
+            if info.game_info["mario_lifes"] > 0 and info.game_info["luigi_lifes"] > 0:
+                if current_time - self.current_update < 3000:
+                    self.info.update(current_time)
+                    self.draw_everything(screen)
+                    self.draw_mario(screen)
+                elif current_time - self.current_update < 3500:
+                    screen.fill((0,0,0))
+                elif current_time - self.current_update < 6500:
+                    self.info.update(current_time)
+                    self.draw_everything(screen)
+                    self.draw_luigi(screen)
+                elif current_time - self.current_update < 7000:
+                    screen.fill((0,0,0))
+                else:
+                    self.done = True
+                    sound.main.play(-1)
+            elif info.game_info["mario_lifes"] > 0 and info.game_info["luigi_lifes"] == 0:
+                if current_time - self.current_update < 3000:
+                    self.info.update(current_time)
+                    self.draw_everything(screen)
+                    self.draw_mario(screen)
+                elif current_time - self.current_update < 3500:
+                    screen.fill((0,0,0))
+                else:
+                    self.done = True
+                    sound.main.play(-1)
+            elif info.game_info["mario_lifes"] == 0 and info.game_info["luigi_lifes"] > 0:
+                if current_time - self.current_update < 3000:
+                    self.info.update(current_time)
+                    self.draw_everything(screen)
+                    self.draw_luigi(screen)
+                elif current_time - self.current_update < 3500:
+                    screen.fill((0,0,0))
+                else:
+                    self.done = True
+                    sound.main.play(-1)
 

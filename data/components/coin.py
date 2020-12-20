@@ -4,7 +4,7 @@ from .. import constante as c
 class Coin(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -56,7 +56,7 @@ class Coin(pg.sprite.Sprite):
 class flash_coin(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -106,7 +106,7 @@ class flash_coin(pg.sprite.Sprite):
 class BigCoin(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

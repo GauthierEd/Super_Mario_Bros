@@ -7,7 +7,7 @@ from .fireball import *
 class Perso(pg.sprite.Sprite):
     def __init__(self,x,y,group = None,name = None):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images\sprite_perso.png")
+        self.sprite = pg.image.load("images\sprite_perso.png").convert_alpha()
         self.name = name
         self.load_image()
         self.setup_booleen()

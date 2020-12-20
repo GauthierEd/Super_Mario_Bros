@@ -4,7 +4,7 @@ from .. import constante as c
 class Gumba(pg.sprite.Sprite):
     def __init__(self,x,y,direction,name = "gumba"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_ennemy.png")
+        self.sprite = pg.image.load("images/sprite_ennemy.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -102,7 +102,7 @@ class Gumba(pg.sprite.Sprite):
 class Koopa(pg.sprite.Sprite):
     def __init__(self,x,y,direction,name = "koopa"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_ennemy.png")
+        self.sprite = pg.image.load("images/sprite_ennemy.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -185,7 +185,7 @@ class Koopa(pg.sprite.Sprite):
 class Shell(pg.sprite.Sprite):
     def __init__(self,x,y,current,group = None,name = "shell"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_ennemy.png")
+        self.sprite = pg.image.load("images/sprite_ennemy.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

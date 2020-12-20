@@ -5,7 +5,7 @@ class Power(pg.sprite.Sprite):
     def __init__(self,x,y,name):
         pg.sprite.Sprite.__init__(self)
         self.name = name
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

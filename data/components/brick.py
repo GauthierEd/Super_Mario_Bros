@@ -8,7 +8,7 @@ from . coin import *
 class Brick(pg.sprite.Sprite):
     def __init__(self,x,y,group = None,content = None,name = "overworld"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_block.png")
+        self.sprite = pg.image.load("images/sprite_block.png").convert_alpha()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -109,7 +109,7 @@ class BrickInvisible(Brick):
 class BrickPiece(pg.sprite.Sprite):
     def __init__(self,x,y,vx,vy,frame_index):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_block.png")
+        self.sprite = pg.image.load("images/sprite_block.png").convert_alpha()
         self.load_img()
         self.image = self.frame[frame_index]
         self.rect = self.image.get_rect()
