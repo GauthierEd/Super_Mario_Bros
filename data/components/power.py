@@ -83,6 +83,15 @@ class MushroomLife(Mushroom):
         self.frame_index = 0
         self.frame.append(self.getImage(16,0,16,16))
 
+class MushroomLifeUnderground(Mushroom):
+    def __init__(self,x,y,name = "mushLife"):
+        Mushroom.__init__(self,x,y,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(160,0,16,16))
+
 class Flower(Power):
     def __init__(self,x,y,name = "flower"):
         Power.__init__(self,x,y,name)

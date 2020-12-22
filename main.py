@@ -31,6 +31,7 @@ class Game(object):
                 self.toggle_fps(event.key)
             elif event.type == KEYUP:
                 self.keys = pg.key.get_pressed()
+                
     
     def update(self):
         self.current_time = pg.time.get_ticks()

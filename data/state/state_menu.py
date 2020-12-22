@@ -36,7 +36,7 @@ class Menu(state.State):
  
 
     def setup_background(self):
-        self.background = pg.image.load("images/fond_0.png").convert()
+        self.background = pg.image.load("images/fond_1.png").convert()
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,(int(self.back_rect.width * c.BACKGROUND_SIZE_MULTIPLIER),int(self.back_rect.height * c.BACKGROUND_SIZE_MULTIPLIER)))
         self.viewport = setup.SCREEN.get_rect(bottom = setup.SCREEN_RECT.bottom)

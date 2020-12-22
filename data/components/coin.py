@@ -4,7 +4,7 @@ from .. import constante as c
 class Coin(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -33,8 +33,8 @@ class Coin(pg.sprite.Sprite):
         self.frame.append(self.getImage(56,113,1,14))
 
 
-    def update(self):
-        self.current_update = pg.time.get_ticks()
+    def update(self,current_time):
+        self.current_update = current_time
 
         self.vy += self.gravity
         self.rect.y += self.vy
@@ -56,7 +56,7 @@ class Coin(pg.sprite.Sprite):
 class flash_coin(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -80,8 +80,8 @@ class flash_coin(pg.sprite.Sprite):
         self.frame.append(self.getImage(9,160,5,8))
         self.frame.append(self.getImage(17,160,5,8))
 
-    def update(self):
-        self.current_update = pg.time.get_ticks()
+    def update(self,current_time):
+        self.current_update = current_time
         if self.last_update == 0:
             self.last_update = self.current_update
         elif self.time_between_2_date(200,250):
@@ -106,7 +106,7 @@ class flash_coin(pg.sprite.Sprite):
 class BigCoin(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -130,8 +130,8 @@ class BigCoin(pg.sprite.Sprite):
         self.frame.append(self.getImage(19,98,10,14))
         self.frame.append(self.getImage(35,98,10,14))
     
-    def update(self):
-        self.current_update = pg.time.get_ticks()
+    def update(self,current_time):
+        self.current_update = current_time
         if self.last_update == 0:
             self.last_update = self.current_update
         elif self.time_between_2_date(200,250):

@@ -30,6 +30,7 @@ class Info(object):
         self.setup_main_menu()
         self.setup_info()
         self.setup_count_coin()
+        self.setup_flash_coin()
         self.setup_mario_life()
         self.setup_mario()
         self.setup_luigi()
@@ -192,6 +193,9 @@ class Info(object):
         
         self.coin_total =  []
         self.create_sentence(self.coin_total,coin,270,60)
+        
+    
+    def setup_flash_coin(self):
         self.flash_coin = flash_coin()
 
     def setup_main_menu(self):
@@ -204,7 +208,7 @@ class Info(object):
 
     def update(self,current_time,state = None):
         if self.state == c.MAIN_MENU:
-            self.flash_coin.update()
+            self.flash_coin.update(current_time)
             self.setup_count_coin()
         elif self.state == c.LEVEL:
             self.timeUpdate(current_time,state)
@@ -212,13 +216,14 @@ class Info(object):
             self.setup_score()
             self.setup_count_coin()
             self.update_coin()
-            self.flash_coin.update()
+            self.flash_coin.update(current_time)
         elif self.state == c.LOAD:
-            self.flash_coin.update()
+            pass
+            self.flash_coin.update(current_time)
         elif self.state == c.GAMEOVER:
-            self.flash_coin.update()
+            self.flash_coin.update(current_time)
         elif self.state == c.TIMEOUT:
-            self.flash_coin.update()
+            self.flash_coin.update(current_time)
     
     def timeUpdate(self,current_time,state):
         if state != c.SLIDEFLAG and state != c.WAITFLAG and state != c.WALKTOCASTLE and int(game_info["time"] >= 0):

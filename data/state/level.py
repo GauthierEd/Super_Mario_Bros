@@ -42,28 +42,28 @@ class Level(state.State):
         self.level = pg.Surface((width,height)).convert()
         self.level_rect = self.level.get_rect()
         self.viewport = setup.SCREEN.get_rect(bottom = self.level_rect.bottom)
-        self.viewport.x = 8000
+        self.viewport.x = 0
         
         
     def setup_mario(self):
         self.fireball_mario = pg.sprite.Group()
         self.fireball_luigi = pg.sprite.Group()
-        self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_mario)
+       
 
         if not info.game_info["multi"]:
-            self.mario = Mario(50,c.GROUND_HEIGHT,self.fireball_mario)
+            self.mario = Mario(100,c.GROUND_HEIGHT,self.fireball_mario)
             self.mario_death_timer = 0
             self.player = [self.mario]
             self.mario_test = True
         else:
             self.player = []
             if info.game_info["mario_lifes"] > 0:
-                self.mario = Mario(8200,c.GROUND_HEIGHT,self.fireball_mario)
+                self.mario = Mario(100,c.GROUND_HEIGHT,self.fireball_mario)
                 self.mario_death_timer = 0
                 self.mario_test = True
                 self.player.append(self.mario)
             if info.game_info["luigi_lifes"] > 0:
-                self.luigi = Luigi(8200,c.GROUND_HEIGHT,self.fireball_luigi)
+                self.luigi = Luigi(50,c.GROUND_HEIGHT,self.fireball_luigi)
                 self.luigi_death_timer = 0
                 self.luigi_test = True
                 self.player.append(self.luigi)
@@ -78,16 +78,13 @@ class Level(state.State):
         self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4,ground_5)
 
     def setup_pipe(self):
-        pipe_1 = Collider(449,452,30,31)
-        pipe_2 = Collider(609,153 * c.BACKGROUND_SIZE_MULTIPLIER,30,47)
-        pipe_3 = Collider(737,137 * c.BACKGROUND_SIZE_MULTIPLIER,30,63)
-        pipe_4 = Collider(913,137 * c.BACKGROUND_SIZE_MULTIPLIER,30,63)
-        pipe_5 = Collider(2609,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
-        pipe_6 = Collider(2865,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
-        pipe_7 = Collider(3635,168 * c.BACKGROUND_SIZE_MULTIPLIER,40,32)
-        pipe_8 = Collider(3675,24 * c.BACKGROUND_SIZE_MULTIPLIER,16,176)
-
-        self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6,pipe_7,pipe_8)
+        pipe_1 = Pipe(448,168,32,32)
+        pipe_2 = Pipe(608,152,32,48)
+        pipe_3 = Pipe(736,136,32,64)
+        pipe_4 = Pipe(912,136,32,64)
+        pipe_5 = Pipe(2608,168,32,32)
+        pipe_6 = Pipe(2864,168,32,32)
+        self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6)
 
     def setup_stair(self):
         stair_1 = Collider(2144,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
@@ -266,36 +263,36 @@ class Level(state.State):
         self.power = pg.sprite.Group()
 
     def setup_ennemy(self):
-        e1 = Gumba(352,184, -1)
+        e1 = GumbaUnderground(352,184, -1)
 
-        e2 = Gumba(642,184, 1)
+        e2 = GumbaOverworld(642,184, 1)
         self.ennemy_g1 = pg.sprite.Group(e2)
 
-        e3 = Gumba(820,184,-1)
-        e4 = Gumba(845,184,-1)
+        e3 = GumbaOverworld(820,184,-1)
+        e4 = GumbaOverworld(845,184,-1)
         self.ennemy_g2 = pg.sprite.Group(e3,e4)
 
-        e5 = Gumba(1300,55,-1)
-        e6 = Gumba(1325,55,-1)
+        e5 = GumbaOverworld(1300,55,-1)
+        e6 = GumbaOverworld(1325,55,-1)
         self.ennemy_g3 = pg.sprite.Group(e5,e6)
 
-        e7 = Gumba(1562,184,-1)
-        e8 = Gumba(1587,184,-1)
+        e7 = GumbaOverworld(1562,184,-1)
+        e8 = GumbaOverworld(1587,184,-1)
         self.ennemy_g4 = pg.sprite.Group(e7,e8)
 
-        e9 = Koopa(1715,176,-1)
-        e10 = Gumba(1830,184,-1)
-        e11 = Gumba(1855,184,-1)
+        e9 = KoopaUnderground(1715,176,-1)
+        e10 = GumbaOverworld(1830,184,-1)
+        e11 = GumbaOverworld(1855,184,-1)
         self.ennemy_g5 = pg.sprite.Group(e9,e10,e11)
 
-        e12 = Gumba(1985,184,-1)
-        e13 = Gumba(2010,184,-1)
-        e14 = Gumba(2050,184,-1)
-        e15 = Gumba(2075,184,-1)
+        e12 = GumbaOverworld(1985,184,-1)
+        e13 = GumbaOverworld(2010,184,-1)
+        e14 = GumbaOverworld(2050,184,-1)
+        e15 = GumbaOverworld(2075,184,-1)
         self.ennemy_g6 = pg.sprite.Group(e12,e13,e14,e15)
 
-        e16 = Gumba(2780,184,-1)
-        e17 = Gumba(2805,184,-1)
+        e16 = GumbaOverworld(2780,184,-1)
+        e17 = GumbaOverworld(2805,184,-1)
         self.ennemy_g7 = pg.sprite.Group(e16,e17)
 
         
@@ -305,17 +302,18 @@ class Level(state.State):
         self.all_ennemy = pg.sprite.Group(self.ennemy,self.ennemy_death,self.ennemy_g1,self.ennemy_g2,self.ennemy_g3,self.ennemy_g4,self.ennemy_g5,self.ennemy_g6,self.ennemy_g7)
 
     def setup_checkpoint(self):
-        check1 = checkPoint(470,0,"1")
-        check2 = checkPoint(600,0,"2")
-        check3 = checkPoint(1100,0,"3")
-        check4 = checkPoint(1400,0,"4")
-        check5 = checkPoint(1530,0,"5")
-        check6 = checkPoint(1830,0,"6")
-        check7 = checkPoint(2630,0,"7")
-        check8 = checkPoint(3178,32,"8")
-        check9 = checkPoint(912,130,"pipe")
-        check10 = checkPoint(3633,168 * c.BACKGROUND_SIZE_MULTIPLIER,"pipe2")
-        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9,check10)
+        check1 = checkPoint(470,0,1,c.HEIGHT,"1")
+        check2 = checkPoint(600,0,1,c.HEIGHT,"2")
+        check3 = checkPoint(1100,0,1,c.HEIGHT,"3")
+        check4 = checkPoint(1400,0,1,c.HEIGHT,"4")
+        check5 = checkPoint(1530,0,1,c.HEIGHT,"5")
+        check6 = checkPoint(1830,0,1,c.HEIGHT,"6")
+        check7 = checkPoint(2630,0,1,c.HEIGHT,"7")
+        check8 = checkPoint(3175,32,1,152,"8")
+        check9 = checkPoint(912,130,32,c.HEIGHT,"pipe")
+        check10 = checkPoint(3633,168,1,c.HEIGHT,"pipe2")
+        check11 = checkPoint(3168,183,9,10,"9")
+        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9,check10,check11)
         self.flag = Flag(3175,40)
         self.flagEnd = FlagEnd(3265,140)
         
@@ -362,14 +360,19 @@ class Level(state.State):
         if self.flagEnd.rect.top < 121 * c.BACKGROUND_SIZE_MULTIPLIER:
             self.level.blit(self.flagEnd.image,self.flagEnd.rect)
         self.ground.draw(self.level)
+        self.pipe.draw(self.level)
         self.bigCoin.draw(self.level)
         self.power.draw(self.level)
         self.brick.draw(self.level)
         self.ennemy.draw(self.level)
         self.ennemy_death.draw(self.level)
         self.coin_brick.draw(self.level)
+        if self.multi:
+             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_mario)
+        else:
+            self.fireball = pg.sprite.Group(self.fireball_mario)
         self.fireball.draw(self.level)
-        self.checkpoint.draw(self.level)
+        #self.checkpoint.draw(self.level)
         self.coin.draw(self.level)
         self.draw_score(self.level)
         self.brick_piece.draw(self.level)
@@ -384,17 +387,19 @@ class Level(state.State):
         self.mario.update(keys)
         if self.multi:
             self.luigi.update(keys)
-        self.ground.update()
         self.brick.update()
         self.brick_piece.update()
-        self.coin_brick.update()
-        self.coin.update()
-        self.bigCoin.update()
+        self.coin_brick.update(self.current_update)
+        self.coin.update(self.current_update)
+        self.bigCoin.update(self.current_update)
         self.power.update(self.current_update)
-        self.ennemy.update()
-        self.ennemy_death.update()
+        self.ennemy.update(self.current_update)
+        self.ennemy_death.update(self.current_update)
+        if self.multi:
+             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_mario)
+        else:
+            self.fireball = pg.sprite.Group(self.fireball_mario)
         self.fireball.update()
-        self.checkpoint.update()
         self.flag.update()
         self.update_score()
         self.adjust_position_player()
@@ -427,7 +432,8 @@ class Level(state.State):
         self.mario.update(keys)
         if self.multi:
             self.luigi.update(keys)
-        self.coin_brick.update()
+        self.coin_brick.update(self.current_update)
+        self.bigCoin.update(self.current_update)
         self.info.update(self.current_update,self.mario.state)
         self.check_if_mario_in_transition()
         self.check_if_change_state()
@@ -633,9 +639,8 @@ class Level(state.State):
                 char.rect.y -= 1
 
     def update_viewport(self):
-        # Scroll Background si mario dépasse la moitié de l'écran
         if not self.multi:
-            if self.mario.rect.x < 3243 * c.BACKGROUND_SIZE_MULTIPLIER:
+            if self.viewport.x < 3092 * c.BACKGROUND_SIZE_MULTIPLIER:
                 third = self.viewport.x + self.viewport.w / 3
                 mario_center = self.mario.rect.centerx
                 mario_right = self.mario.rect.right
@@ -649,7 +654,7 @@ class Level(state.State):
                     highest = self.level_rect.w - self.viewport.w
                     self.viewport.x = min(highest,new)
         elif self.multi:
-            if self.luigi.rect.x < 3243 * c.BACKGROUND_SIZE_MULTIPLIER and self.mario.rect.x < 3243 * c.BACKGROUND_SIZE_MULTIPLIER:
+            if self.viewport.x < 3092 * c.BACKGROUND_SIZE_MULTIPLIER:
                 third = self.viewport.x + self.viewport.w / 3
                 mario_center = self.mario.rect.centerx
                 mario_right = self.mario.rect.right
@@ -760,10 +765,15 @@ class Level(state.State):
             self.ennemy.add(self.ennemy_g7)
             checkpoint.kill()
         elif checkpoint.name == "8" and player.state != c.SLIDEFLAG and player.state != c.WAITFLAG:
-            if (self.luigi.state != c.SLIDEFLAG and self.luigi.state != c.WAITFLAG) and (self.mario.state != c.SLIDEFLAG and self.mario.state != c.WAITFLAG):
+            if self.multi:
+                if self.luigi.state != c.SLIDEFLAG and self.luigi.state != c.WAITFLAG and self.mario.state != c.SLIDEFLAG and self.mario.state != c.WAITFLAG:
+                    sound.main.stop()
+                    sound.flag.play()
+            else:
                 sound.main.stop()
                 sound.flag.play()
             player.state = c.SLIDEFLAG
+            player.rect.right = checkpoint.rect.x + 10
             if self.flag.state != c.SLIDEFLAG:
                 self.flag.state = c.SLIDEFLAG
             if player.rect.centery < 125:
@@ -794,6 +804,17 @@ class Level(state.State):
                     checkpoint.kill()
             else:
                 checkpoint.kill()
+        elif checkpoint.name == "9" and player.state == c.SLIDEFLAG:
+            
+            player.rect.x = player.rect.right + 5
+            player.right = False
+            player.vy = 0
+            if self.multi:
+                if self.mario.state != c.WAITFLAG and self.mario.state != c.WALKTOCASTLE and self.luigi.state != c.WAITFLAG and self.luigi.state != c.WALKTOCASTLE:
+                    sound.end.play()
+            else:
+                sound.end.play()
+            player.state = c.WAITFLAG
         elif checkpoint.name == "pipe":
             player.canGoUnder = True
         elif checkpoint.name == "pipe2":
@@ -809,6 +830,9 @@ class Level(state.State):
                     self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
+                    info.game_info["scores"] += 200
+                elif ennemy.name == "pirana":
                     self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
@@ -843,11 +867,13 @@ class Level(state.State):
                 if ennemy.name == "gumba":
                     self.set_score("100",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 100
-                    
                 elif ennemy.name == "koopa":
                     self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 elif ennemy.name == "shell":
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
+                    info.game_info["scores"] += 200
+                elif ennemy.name == "pirana":
                     self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
@@ -962,34 +988,53 @@ class Level(state.State):
                 elif ennemy.name == "shell":
                     self.set_score("200",ennemy.rect.x,ennemy.rect.y)
                     info.game_info["scores"] += 200
+                elif ennemy.name == "pirana":
+                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
+                    info.game_info["scores"] += 200
                 self.ennemy.remove(ennemy)
                 ennemy.jumpToDeath()
                 sound.kick.play()
                 self.ennemy_death.add(ennemy)
             else:
-                sound.stomp.play()
-                player.vy = -7
-                player.rect.bottom = ennemy.rect.top
-                if ennemy.name == "gumba":
-                    self.ennemy.remove(ennemy)
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                    ennemy.startToDeath()
-                    self.ennemy_death.add(ennemy)
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    self.ennemy.remove(ennemy)
-                    info.game_info["scores"] += 200
-                    self.ennemy.add(Shell(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    ennemy.kill()
-                elif ennemy.name == "shell":
-                    if ennemy.vx == 0:
-                        if player.rect.centerx < (ennemy.rect.centerx - (ennemy.rect.width / 4)):
-                            ennemy.vx = 8
-                        elif player.rect.centerx > (ennemy.rect.centerx + (ennemy.rect.width / 4)):
-                            ennemy.vx = -8
+                if ennemy.name == "pirana":
+                    if player.isBig:
+                        player.state = c.TOSMALL
+                        player.transform = True
+                        self.change_flower_into_mush()
+                        player.setWasTouched()
+                        sound.pipe.play()
                     else:
-                        ennemy.vx = 0
+                        player.vy = - 8
+                        player.state = c.JUMPTODEATH
+                else:
+                    sound.stomp.play()
+                    player.vy = -7
+                    player.rect.bottom = ennemy.rect.top
+                    if ennemy.name == "gumba":
+                        self.ennemy.remove(ennemy)
+                        self.set_score("100",ennemy.rect.x,ennemy.rect.y)
+                        info.game_info["scores"] += 100
+                        ennemy.startToDeath()
+                        self.ennemy_death.add(ennemy)
+                    elif ennemy.name == "koopa":
+                        self.set_score("200",ennemy.rect.x,ennemy.rect.y)
+                        self.ennemy.remove(ennemy)
+                        info.game_info["scores"] += 200
+                        if ennemy.type == "green":
+                            self.ennemy.add(ShellOverworld(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
+                        elif ennemy.type == "blue":
+                            self.ennemy.add(ShellUnderground(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
+                        elif ennemy.type == "red":
+                            self.ennemy.add(ShellRed(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
+                        ennemy.kill()
+                    elif ennemy.name == "shell":
+                        if ennemy.vx == 0:
+                            if player.rect.centerx < (ennemy.rect.centerx - (ennemy.rect.width / 4)):
+                                ennemy.vx = 8
+                            elif player.rect.centerx > (ennemy.rect.centerx + (ennemy.rect.width / 4)):
+                                ennemy.vx = -8
+                        else:
+                            ennemy.vx = 0
             
         elif player.rect.top < ennemy.rect.bottom and player.rect.bottom > ennemy.rect.bottom:
             if player.invincible:
@@ -1254,7 +1299,10 @@ class Level(state.State):
 ######### ENNEMY COLLISION #########
     def adjust_position_ennemy(self):
         for e in self.ennemy:
-            if e.state != c.DEATH:
+            if e.name == "pirana":
+                e.rect.x += e.vx
+                e.rect.y += e.vy
+            elif e.state != c.DEATH:
                 self.ennemy.remove(e)
                 e.rect.x += round(e.vx)
                 self.check_ennemy_collision_x(e)
@@ -1393,6 +1441,10 @@ class Level(state.State):
 
 ######### FIREBALL COLLISION ###########
     def adjust_position_fireball(self):
+        if self.multi:
+             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_mario)
+        else:
+            self.fireball = pg.sprite.Group(self.fireball_mario)
         for b in self.fireball:
             b.rect.x += round(b.vx)
             self.check_fireball_collision_x(b)

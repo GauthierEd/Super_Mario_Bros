@@ -312,20 +312,14 @@ class Perso(pg.sprite.Sprite):
         self.vx = 0
         self.vy = 4
 
-        if self.rect.bottom >= 492:
-            self.vy = 0
-            self.right = False
-            self.rect.x = self.rect.right + 5
-            self.state = c.WAITFLAG
-        else:
-            if self.current_update - self.last_update > 100 :
-                self.last_update = self.current_update
-                self.frame_index = 6 + (self.frame_index + 1) % 2
+       
+        if self.current_update - self.last_update > 100 :
+            self.last_update = self.current_update
+            self.frame_index = 6 + (self.frame_index + 1) % 2
 
     def waitFlag(self):
         if self.flag_timer == 0:
             self.flag_timer = self.current_update
-            sound.end.play()
         elif self.current_update - self.flag_timer > 700:
             self.vy += self.gravity
             self.vx = 2
