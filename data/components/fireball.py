@@ -4,7 +4,7 @@ from .. import constante as c
 class FireBall(pg.sprite.Sprite):
     def __init__(self,x,y,direction):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

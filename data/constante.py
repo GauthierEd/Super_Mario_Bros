@@ -43,6 +43,7 @@ SLIDEFLAG = "slideflag"
 WAITFLAG = "waitflag"
 WALKTOCASTLE = "walktocastle"
 
+
 MAX_WALK_SPEED = 6
 WALK_ACC = 0.15
 TURN_AROUD = 0.35

@@ -5,7 +5,6 @@ import data.setup
 from data.state import level,state_load,state_menu,state_timeout,state_gameover
 
 
-
 class Game(object):
     def __init__(self,state):
         self.screen = pg.display.get_surface()

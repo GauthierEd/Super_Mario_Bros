@@ -5,7 +5,7 @@ class Power(pg.sprite.Sprite):
     def __init__(self,x,y,name):
         pg.sprite.Sprite.__init__(self)
         self.name = name
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -54,9 +54,7 @@ class Mushroom(Power):
         self.vy = -1
 
     def load_img(self):
-        self.frame = []
-        self.frame_index = 0
-        self.frame.append(self.getImage(0,0,16,16))
+        pass
     
     def powerSpawn(self): 
         if self.rect.top > self.max_y:
@@ -73,8 +71,26 @@ class Mushroom(Power):
             self.kill()
         elif self.rect.y > c.HEIGHT:
             self.kill()
-        
-class MushroomLife(Mushroom):
+
+class MushroomOverworld(Mushroom):
+    def __init__(self,x,y,name = "mush"):
+        Mushroom.__init__(self,x,y,name)
+
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(0,0,16,16))
+
+class MushroomUnderground(Mushroom):
+    def __init__(self,x,y,name = "mush"):
+        Mushroom.__init__(self,x,y,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(0,0,16,16))
+
+class MushroomLifeOverworld(Mushroom):
     def __init__(self,x,y,name = "mushLife"):
         Mushroom.__init__(self,x,y,name)
 
@@ -83,6 +99,15 @@ class MushroomLife(Mushroom):
         self.frame_index = 0
         self.frame.append(self.getImage(16,0,16,16))
 
+class MushroomLifeUnderground(Mushroom):
+    def __init__(self,x,y,name = "mushLife"):
+        Mushroom.__init__(self,x,y,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(160,0,16,16))
+
 class Flower(Power):
     def __init__(self,x,y,name = "flower"):
         Power.__init__(self,x,y,name)
@@ -90,12 +115,8 @@ class Flower(Power):
         self.last_update = 0
     
     def load_img(self):
-        self.frame = []
-        self.frame_index = 0
-        self.frame.append(self.getImage(0,32,16,16))
-        self.frame.append(self.getImage(16,32,16,16))
-        self.frame.append(self.getImage(32,32,16,16))
-        self.frame.append(self.getImage(48,32,16,16))
+        pass
+        
     
     def powerSpawn(self):
         if self.rect.top > self.max_y:
@@ -119,6 +140,30 @@ class Flower(Power):
         self.rect.left = left
         self.rect.bottom = bottom
 
+class FlowerOverworld(Flower):
+    def __init__(self,x,y,name = "flower"):
+        Flower.__init__(self,x,y,name)
+
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(0,32,16,16))
+        self.frame.append(self.getImage(16,32,16,16))
+        self.frame.append(self.getImage(32,32,16,16))
+        self.frame.append(self.getImage(48,32,16,16))
+
+class FlowerUnderground(Flower):
+    def __init__(self,x,y,name = "flower"):
+        Flower.__init__(self,x,y,name)
+
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(144,32,16,16))
+        self.frame.append(self.getImage(160,32,16,16))
+        self.frame.append(self.getImage(176,32,16,16))
+        self.frame.append(self.getImage(192,32,16,16))
+
 class Star(Power):
     def __init__(self,x,y,name = "star"):
         Power.__init__(self,x,y,name)
@@ -127,6 +172,7 @@ class Star(Power):
         self.last_update = 0
     
     def load_img(self):
+        pass
         self.frame = []
         self.frame_index = 0
         self.frame.append(self.getImage(1,48,14 ,16))
@@ -162,3 +208,26 @@ class Star(Power):
         self.rect.left = left
         self.rect.bottom = bottom
 
+class StarOverworld(Star):
+    def __init__(self,x,y,name = "star"):
+        Star.__init__(self,x,y,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(1,48,14 ,16))
+        self.frame.append(self.getImage(17,48,14,16))
+        self.frame.append(self.getImage(33,48,14,16))
+        self.frame.append(self.getImage(49,48,14,16))
+
+class StarUnderground(Star):
+    def __init__(self,x,y,name = "star"):
+        Star.__init__(self,x,y,name)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+        self.frame.append(self.getImage(145,48,14 ,16))
+        self.frame.append(self.getImage(161,48,14,16))
+        self.frame.append(self.getImage(177,48,14,16))
+        self.frame.append(self.getImage(193,48,14,16))

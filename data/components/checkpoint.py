@@ -2,18 +2,19 @@ import pygame as pg
 from .. import constante as c  
 
 class checkPoint(pg.sprite.Sprite):
-    def __init__(self,x,y,name = None):
+    def __init__(self,x,y,w,h,name = None):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((32 * c.BACKGROUND_SIZE_MULTIPLIER,c.HEIGHT), pg.SRCALPHA, 32)
+        self.image = pg.Surface((w * c.BACKGROUND_SIZE_MULTIPLIER,h * c.BACKGROUND_SIZE_MULTIPLIER))
+        self.image.fill((255,255,255))
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
-        self.rect.y = y
+        self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
         self.name = name
 
 class FlagEnd(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.image = self.getImage(129,2,13,14)
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
@@ -50,7 +51,7 @@ class FlagEnd(pg.sprite.Sprite):
 class Flag(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png")
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

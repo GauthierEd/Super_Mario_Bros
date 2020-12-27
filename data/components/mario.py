@@ -7,7 +7,7 @@ from .fireball import *
 class Perso(pg.sprite.Sprite):
     def __init__(self,x,y,group = None,name = None):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images\sprite_perso.png")
+        self.sprite = pg.image.load("images\sprite_perso.png").convert_alpha()
         self.name = name
         self.load_image()
         self.setup_booleen()
@@ -46,6 +46,7 @@ class Perso(pg.sprite.Sprite):
         self.canGoUnder = False
         self.inUnder = False
         self.canGoOverworld = False
+        self.test_when_die = True
 
     def setup_timer(self):
         self.last_update = 0
@@ -57,6 +58,7 @@ class Perso(pg.sprite.Sprite):
         self.wasTouched_animation = 0
         self.fireball_timer = 0
         self.flag_timer = 0
+        self.death_timer = 0
 
     def load_image(self):
         self.frame_index = 0
@@ -400,7 +402,7 @@ class Perso(pg.sprite.Sprite):
 
     def standing(self,keys):
         self.check_if_can_jump(keys)
-        self.vy = 0
+        #self.vy = 0
         self.vx = 0
         self.frame_index = 3
 
@@ -479,16 +481,11 @@ class Perso(pg.sprite.Sprite):
                 self.vx += self.ax
         else:
             if self.right:
-                
                 if self.vx > 0:
-                    
                     self.vx -= (self.ax * 2)
                 else:
-                    
                     self.vx = 0
-                    
                     self.state = c.STAND
-                    
             else:
                 if self.vx <= 0:
                     self.vx += (self.ax * 2)
