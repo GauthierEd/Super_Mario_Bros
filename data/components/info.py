@@ -24,13 +24,12 @@ class Character(pg.sprite.Sprite):
 
 class Info(object):
     def __init__(self,state):
-        self.sprite = pg.image.load("images/sprite_text.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_text.png")
         self.setup_letter()
         self.state = state
         self.setup_main_menu()
         self.setup_info()
         self.setup_count_coin()
-        self.setup_flash_coin()
         self.setup_mario_life()
         self.setup_mario()
         self.setup_luigi()
@@ -193,9 +192,6 @@ class Info(object):
         
         self.coin_total =  []
         self.create_sentence(self.coin_total,coin,270,60)
-        
-    
-    def setup_flash_coin(self):
         self.flash_coin = flash_coin()
 
     def setup_main_menu(self):
@@ -208,7 +204,7 @@ class Info(object):
 
     def update(self,current_time,state = None):
         if self.state == c.MAIN_MENU:
-            self.flash_coin.update(current_time)
+            self.flash_coin.update()
             self.setup_count_coin()
         elif self.state == c.LEVEL:
             self.timeUpdate(current_time,state)
@@ -216,14 +212,13 @@ class Info(object):
             self.setup_score()
             self.setup_count_coin()
             self.update_coin()
-            self.flash_coin.update(current_time)
+            self.flash_coin.update()
         elif self.state == c.LOAD:
-            pass
-            self.flash_coin.update(current_time)
+            self.flash_coin.update()
         elif self.state == c.GAMEOVER:
-            self.flash_coin.update(current_time)
+            self.flash_coin.update()
         elif self.state == c.TIMEOUT:
-            self.flash_coin.update(current_time)
+            self.flash_coin.update()
     
     def timeUpdate(self,current_time,state):
         if state != c.SLIDEFLAG and state != c.WAITFLAG and state != c.WALKTOCASTLE and int(game_info["time"] >= 0):

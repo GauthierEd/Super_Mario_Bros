@@ -80,8 +80,8 @@ class flash_coin(pg.sprite.Sprite):
         self.frame.append(self.getImage(9,160,5,8))
         self.frame.append(self.getImage(17,160,5,8))
 
-    def update(self,current_time):
-        self.current_update = current_time
+    def update(self):
+        self.current_update = pg.time.get_ticks()
         if self.last_update == 0:
             self.last_update = self.current_update
         elif self.time_between_2_date(200,250):

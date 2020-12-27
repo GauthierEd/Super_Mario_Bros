@@ -10,8 +10,6 @@ TIMEOUT = "timeout"
 # State Gumba
 DEATH = "death"
 BORN = "born"
-MOVEUP = "moveup"
-MOVEDOWN = "movedown"
 
 #State Power
 POWER_SPAWN = "power_spawn"
@@ -45,6 +43,7 @@ SLIDEFLAG = "slideflag"
 WAITFLAG = "waitflag"
 WALKTOCASTLE = "walktocastle"
 
+
 MAX_WALK_SPEED = 6
 WALK_ACC = 0.15
 TURN_AROUD = 0.35
@@ -77,4 +76,3 @@ FPS = 60
 BACKGROUND_SIZE_MULTIPLIER = 2.679
 SIZE_MULTIPLIER = 2.5
 BRICK_SIZE_MULTIPLIER = 2.69
-PIPE_SIZE_MULTIPLIER = 2.6875

@@ -1,40 +1,24 @@
 import pygame as pg
 from .. import constante as c
-"""
-__init__ :  sprite
-            load_img
-            self.image
-            self.rect
-            x
-            y
-            vx # diff for gumba and koopa
-            vy = 0 
-            gravity
-            state
-            name
-            current_update
-            last_update
-            death_update
-"""
 
 class Ennemy(pg.sprite.Sprite):
-    def __init__(self,x,y,direction):
+    def __init__(self,x,y,direction,name):
         pg.sprite.Sprite.__init__(self)
-        self.name = None
         self.sprite = pg.image.load("images/sprite_ennemy.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
         self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
-        self.vx = 0 
+        self.vx = 1.5 * direction
         self.vy = 0
         self.gravity = c.GRAVITY
         self.state = c.WALK
+        self.name = name
         self.current_update = 0
         self.last_update = 0
         self.death_update = 0
-    
+
     def getImage(self,x,y,w,h):
         image = pg.Surface((w,h))
         image.blit(self.sprite,(0,0),(x,y,w,h))
@@ -44,9 +28,17 @@ class Ennemy(pg.sprite.Sprite):
 
     def load_img(self):
         pass
-    
-    def update(self,current_time):
-        self.current_update = current_time
+        self.frame = []
+        self.frame_index = 0
+
+        self.frame.append(self.getImage(0,16,16,16)) 
+        self.frame.append(self.getImage(16,16,16,16))
+        self.frame.append(pg.transform.flip(self.getImage(0,16,16,16),True,True))
+        self.frame.append(self.getImage(32,24,16,8)) # death
+        
+
+    def update(self):
+        self.current_update = pg.time.get_ticks()
         self.handleState()
 
     def handleState(self):
@@ -56,7 +48,7 @@ class Ennemy(pg.sprite.Sprite):
             self.death()
 
     def startToDeath(self):
-        self.frame_index = 2
+        self.frame_index = 3
         self.state = c.DEATH
         self.vx = 0
         self.vy = 0
@@ -70,7 +62,17 @@ class Ennemy(pg.sprite.Sprite):
         self.rect.bottom = bottom
 
     def jumpToDeath(self):
-        pass
+        self.frame_index = 2
+        self.vx = 5
+        self.vy = -10
+        self.death_update = self.current_update
+        self.state = c.DEATH
+        left = self.rect.left
+        bottom = self.rect.bottom
+        self.image = self.frame[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.left = left
+        self.rect.bottom = bottom
 
     def death(self):
         self.vy += self.gravity
@@ -78,7 +80,6 @@ class Ennemy(pg.sprite.Sprite):
         self.rect.x += round(self.vx)
         if self.current_update - self.death_update > 500:
             self.kill()
-
 
     def move(self):
         if self.vy < c.MAX_VEL_Y:
@@ -97,78 +98,38 @@ class Ennemy(pg.sprite.Sprite):
 
         if self.rect.y > c.HEIGHT:
             self.kill()
+        
+class GumbaOverworld(Ennemy):
+    def __init__(self,x,y,direction,name = "gumba"):
+        Ennemy.__init__(self,x,y,direction,name)
 
-    
-
-class Gumba(Ennemy):
-    def __init__(self,x,y,direction):
-        Ennemy.__init__(self,x,y,direction)
-        self.vx = 1.5 * direction
-        self.name = "gumba"
-
-    def jumpToDeath(self):
-        self.frame_index = 3
-        self.vx = 5
-        self.vy = -10
-        self.death_update = self.current_update
-        self.state = c.DEATH
-        left = self.rect.left
-        bottom = self.rect.bottom
-        self.image = self.frame[self.frame_index]
-        self.rect = self.image.get_rect()
-        self.rect.left = left
-        self.rect.bottom = bottom
-    
-class GumbaOverworld(Gumba):
-    def __init__(self,x,y,direction):
-        Gumba.__init__(self,x,y,direction)
-    
     def load_img(self):
         self.frame = []
         self.frame_index = 0
 
         self.frame.append(self.getImage(0,16,16,16)) 
         self.frame.append(self.getImage(16,16,16,16))
-        self.frame.append(self.getImage(32,24,16,8)) # death
         self.frame.append(pg.transform.flip(self.getImage(0,16,16,16),True,True))
+        self.frame.append(self.getImage(32,24,16,8)) # death
 
-class GumbaUnderground(Gumba):
-    def __init__(self,x,y,direction):
-        Gumba.__init__(self,x,y,direction)
-    
+class GumbaUnderground(Ennemy):
+    def __init__(self,x,y,direction,name = "gumba"):
+        Ennemy.__init__(self,x,y,direction,name)
+
     def load_img(self):
         self.frame = []
         self.frame_index = 0
 
         self.frame.append(self.getImage(0,48,16,16)) 
         self.frame.append(self.getImage(16,48,16,16))
-        self.frame.append(self.getImage(32,56,16,8)) # death
         self.frame.append(pg.transform.flip(self.getImage(0,48,16,16),True,True))
+        self.frame.append(self.getImage(32,56,16,8)) # death
 
-class Koopa(Ennemy):
-    def __init__(self,x,y,direction):
-        Ennemy.__init__(self,x,y,direction)
-        self.vx = 2 * direction
-        self.name = "koopa"
-    
-    def jumpToDeath(self):
-        self.frame_index = 2
-        self.vx = 5
-        self.vy = -10
-        self.death_update = self.current_update
-        self.state = c.DEATH
-        left = self.rect.left
-        bottom = self.rect.bottom
-        self.image = self.frame[self.frame_index]
-        self.rect = self.image.get_rect()
-        self.rect.left = left
-        self.rect.bottom = bottom
+class KoopaOverworld(Ennemy):
+    def __init__(self,x,y,direction,name = "koopa"):
+        Ennemy.__init__(self,x,y,direction,name)
+        self.type = "overworld"
 
-class KoopaOverworld(Koopa):
-    def __init__(self,x,y,direction):
-        Koopa.__init__(self,x,y,direction)
-        self.type = "green"
-    
     def load_img(self):
         self.frame = []
         self.frame_index = 0
@@ -176,11 +137,11 @@ class KoopaOverworld(Koopa):
         self.frame.append(self.getImage(96,8,15,24)) 
         self.frame.append(self.getImage(112,9,16,23))
         self.frame.append(pg.transform.flip(self.getImage(160,17,16,14),True,True)) # death
-
-class KoopaUnderground(Koopa):
-    def __init__(self,x,y,direction):
-        Koopa.__init__(self,x,y,direction)
-        self.type = "blue"
+    
+class KoopaUnderground(Ennemy):
+    def __init__(self,x,y,direction,name = "koopa"):
+        Ennemy.__init__(self,x,y,direction,name)
+        self.type = "underground"
 
     def load_img(self):
         self.frame = []
@@ -188,13 +149,13 @@ class KoopaUnderground(Koopa):
 
         self.frame.append(self.getImage(96,40,15,24)) 
         self.frame.append(self.getImage(112,41,16,23))
-        self.frame.append(pg.transform.flip(self.getImage(160,49,16,14),True,True)) # death
+        self.frame.append(pg.transform.flip(self.getImage(160,48,16,14),True,True)) # death
 
-class KoopaRed(Koopa):
-    def __init__(self,x,y,direction):
-        Koopa.__init__(self,x,y,direction)
+class KoopaRed(Ennemy):
+    def __init__(self,x,y,direction,name = "koopa"):
+        Ennemy.__init__(self,x,y,direction,name)
         self.type = "red"
-            
+
     def load_img(self):
         self.frame = []
         self.frame_index = 0
@@ -202,9 +163,11 @@ class KoopaRed(Koopa):
         self.frame.append(self.getImage(96,72,15,24)) 
         self.frame.append(self.getImage(112,73,16,23))
         self.frame.append(pg.transform.flip(self.getImage(160,81,16,14),True,True)) # death
-
+    
+    
+        
 class Shell(pg.sprite.Sprite):
-    def __init__(self,x,y,current,group = None):
+    def __init__(self,x,y,current,group = None,name = "shell"):
         pg.sprite.Sprite.__init__(self)
         self.sprite = pg.image.load("images/sprite_ennemy.png").convert()
         self.load_img()
@@ -216,7 +179,7 @@ class Shell(pg.sprite.Sprite):
         self.vy = 0
         self.gravity = c.GRAVITY
         self.state = c.WALK
-        self.name = "shell"
+        self.name = name
         self.group = group
         self.current_update = 0
         self.death_update = current
@@ -231,8 +194,8 @@ class Shell(pg.sprite.Sprite):
     def load_img(self):
         pass
     
-    def update(self,current_time):
-        self.current_update = current_time
+    def update(self):
+        self.current_update = pg.time.get_ticks()
         self.handleState()
 
     def handleState(self):
@@ -261,7 +224,6 @@ class Shell(pg.sprite.Sprite):
 
 
     def born(self):
-        pass
         if self.vx != 0:
             self.state = c.WALK
             self.frame_index = 0
@@ -457,12 +419,7 @@ class Pirana(pg.sprite.Sprite):
         return image
 
     def load_img(self):
-        self.frame = []
-        self.frame_index = 0
-
-        self.frame.append(self.getImage(192,41,16,23)) 
-        self.frame.append(self.getImage(208,40,16,24))
-        self.frame.append(pg.transform.flip(self.getImage(192,41,16,23),True,True))
+        pass
     
     def update(self,current_time):
         self.current_update = current_time
@@ -540,4 +497,40 @@ class Pirana(pg.sprite.Sprite):
         self.death_update = self.current_update
         self.state = c.DEATH
         self.set_rect()
-        
+
+class Piranaoverworld(Pirana):
+    def __init__(self,x,y):
+        Pirana.__init__(self,x,y)
+
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+
+        self.frame.append(self.getImage(192,9,16,23)) 
+        self.frame.append(self.getImage(208,8,16,24))
+        self.frame.append(pg.transform.flip(self.getImage(192,9,16,23),True,True))
+
+class PiranaUnderground(Pirana):
+    def __init__(self,x,y):
+        Pirana.__init__(self,x,y)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+
+        self.frame.append(self.getImage(192,41,16,23)) 
+        self.frame.append(self.getImage(208,40,16,24))
+        self.frame.append(pg.transform.flip(self.getImage(192,41,16,23),True,True))
+
+class PiranaRed(Pirana):
+    def __init__(self,x,y):
+        Pirana.__init__(self,x,y)
+    
+    def load_img(self):
+        self.frame = []
+        self.frame_index = 0
+
+        self.frame.append(self.getImage(192,73,16,23)) 
+        self.frame.append(self.getImage(208,72,16,24))
+        self.frame.append(pg.transform.flip(self.getImage(192,73,16,23),True,True))
+

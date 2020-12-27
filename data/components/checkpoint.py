@@ -4,7 +4,6 @@ from .. import constante as c
 class checkPoint(pg.sprite.Sprite):
     def __init__(self,x,y,w,h,name = None):
         pg.sprite.Sprite.__init__(self)
-        #self.image = pg.Surface((w * c.BACKGROUND_SIZE_MULTIPLIER,h * c.BACKGROUND_SIZE_MULTIPLIER), pg.SRCALPHA, 32)
         self.image = pg.Surface((w * c.BACKGROUND_SIZE_MULTIPLIER,h * c.BACKGROUND_SIZE_MULTIPLIER))
         self.image.fill((255,255,255))
         self.rect = self.image.get_rect()
@@ -15,7 +14,7 @@ class checkPoint(pg.sprite.Sprite):
 class FlagEnd(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.image = self.getImage(129,2,13,14)
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
@@ -52,7 +51,7 @@ class FlagEnd(pg.sprite.Sprite):
 class Flag(pg.sprite.Sprite):
     def __init__(self,x,y):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_object.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()

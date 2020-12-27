@@ -46,6 +46,7 @@ class Perso(pg.sprite.Sprite):
         self.canGoUnder = False
         self.inUnder = False
         self.canGoOverworld = False
+        self.test_when_die = True
 
     def setup_timer(self):
         self.last_update = 0
@@ -57,6 +58,7 @@ class Perso(pg.sprite.Sprite):
         self.wasTouched_animation = 0
         self.fireball_timer = 0
         self.flag_timer = 0
+        self.death_timer = 0
 
     def load_image(self):
         self.frame_index = 0
@@ -312,14 +314,20 @@ class Perso(pg.sprite.Sprite):
         self.vx = 0
         self.vy = 4
 
-       
-        if self.current_update - self.last_update > 100 :
-            self.last_update = self.current_update
-            self.frame_index = 6 + (self.frame_index + 1) % 2
+        if self.rect.bottom >= 492:
+            self.vy = 0
+            self.right = False
+            self.rect.x = self.rect.right + 5
+            self.state = c.WAITFLAG
+        else:
+            if self.current_update - self.last_update > 100 :
+                self.last_update = self.current_update
+                self.frame_index = 6 + (self.frame_index + 1) % 2
 
     def waitFlag(self):
         if self.flag_timer == 0:
             self.flag_timer = self.current_update
+            sound.end.play()
         elif self.current_update - self.flag_timer > 700:
             self.vy += self.gravity
             self.vx = 2
@@ -394,7 +402,7 @@ class Perso(pg.sprite.Sprite):
 
     def standing(self,keys):
         self.check_if_can_jump(keys)
-        self.vy = 0
+        #self.vy = 0
         self.vx = 0
         self.frame_index = 3
 
@@ -473,16 +481,11 @@ class Perso(pg.sprite.Sprite):
                 self.vx += self.ax
         else:
             if self.right:
-                
                 if self.vx > 0:
-                    
                     self.vx -= (self.ax * 2)
                 else:
-                    
                     self.vx = 0
-                    
                     self.state = c.STAND
-                    
             else:
                 if self.vx <= 0:
                     self.vx += (self.ax * 2)

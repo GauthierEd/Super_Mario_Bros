@@ -8,7 +8,7 @@ from . coin import *
 class Brick(pg.sprite.Sprite):
     def __init__(self,x,y,group = None,content = None,name = "overworld"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_block.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_block.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -52,10 +52,16 @@ class Brick(pg.sprite.Sprite):
             self.vy = 0
             self.state = c.RESTING
             if self.content == "star":
-                self.group.add(Star(self.rect.centerx,self.rect.y))
+                if self.name == "overworld":
+                    self.group.add(StarOverworld(self.rect.centerx,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(StarUnderground(self.rect.centerx,self.rect.y))
                 self.state = c.OPENED
             elif self.content == "mushLife":
-                self.group.add(MushroomLife(self.rect.x,self.rect.y))
+                if self.name == "overworld":
+                    self.group.add(MushroomLifeOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(MushroomLifeUnderground(self.rect.x,self.rect.y))
                 self.state = c.OPENED
             elif self.content == "coin":
                 self.group.add(Coin(self.rect.centerx,self.rect.y))
@@ -109,7 +115,7 @@ class BrickInvisible(Brick):
 class BrickPiece(pg.sprite.Sprite):
     def __init__(self,x,y,vx,vy,frame_index):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_block.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_block.png").convert()
         self.load_img()
         self.image = self.frame[frame_index]
         self.rect = self.image.get_rect()

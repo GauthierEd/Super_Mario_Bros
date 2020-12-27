@@ -6,7 +6,7 @@ from . coin import *
 class CoinBrick(pg.sprite.Sprite):
     def __init__(self,x,y,group = None,content = None,name = "overworld"):
         pg.sprite.Sprite.__init__(self)
-        self.sprite = pg.image.load("images/sprite_block.png").convert_alpha()
+        self.sprite = pg.image.load("images/sprite_block.png").convert()
         self.load_img()
         self.image = self.frame[self.frame_index]
         self.rect = self.image.get_rect()
@@ -51,15 +51,27 @@ class CoinBrick(pg.sprite.Sprite):
             self.rect.y = self.initial_height
             self.vy = 0
             if self.content == "mush":
-                self.group.add(Mushroom(self.rect.x,self.rect.y))
+                if self.name == "overworld":
+                    self.group.add(MushroomOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(MushroomUnderground(self.rect.x,self.rect.y))
             elif self.content == "flower":
-                self.group.add(Flower(self.rect.x,self.rect.y))
+                if self.name == "overworld":
+                    self.group.add(FlowerOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(FlowerUnderground(self.rect.x,self.rect.y))
             elif self.content == "coin":
                 self.group.add(Coin(self.rect.centerx,self.rect.y))
-            elif self.content == "star":
-                self.group.add(Star(self.rect.centerx,self.rect.y))
+            elif self.content == "star":    
+                if self.name == "overworld":
+                    self.group.add(StarOverworld(self.rect.centerx,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(StarUnderground(self.rect.centerx,self.rect.y))
             elif self.content == "mushLife":
-                self.group.add(MushroomLife(self.rect.x,self.rect.y))
+                if self.name == "overworld":
+                    self.group.add(MushroomLifeOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(MushroomLifeUnderground(self.rect.x,self.rect.y))
             self.state = c.OPENED
 
     def time_between_2_date(self,t1,t2):

@@ -4,7 +4,6 @@ from .. components.mario import *
 from .. import constante as c  
 from .. components import info
 from . import state
-from .. import setup
 
 class Menu(state.State):
     def __init__(self):
@@ -36,10 +35,12 @@ class Menu(state.State):
  
 
     def setup_background(self):
-        self.background = pg.image.load("images/fond_1.png").convert()
+        self.background = pg.image.load("images/fond_0.png")
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,(int(self.back_rect.width * c.BACKGROUND_SIZE_MULTIPLIER),int(self.back_rect.height * c.BACKGROUND_SIZE_MULTIPLIER)))
-        self.viewport = setup.SCREEN.get_rect(bottom = setup.SCREEN_RECT.bottom)
+        self.back_rect = self.background.get_rect()
+        self.back_rect.x = 0
+        self.back_rect.y = 0
     
     def setup_title(self):
         self.title = self.getImage(1,60,176,88)
@@ -61,7 +62,7 @@ class Menu(state.State):
         return image
 
     def draw_everything(self,screen):
-        screen.blit(self.background,self.viewport,self.viewport)
+        screen.blit(self.background,(self.back_rect.x,self.back_rect.y))
         screen.blit(self.mario.image,(self.mario.rect.x,self.mario.rect.y))
         screen.blit(self.title,(self.title_rect.x,self.title_rect.y))
         screen.blit(self.button,(self.button_rect.x,self.button_rect.y))

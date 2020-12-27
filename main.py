@@ -5,7 +5,6 @@ import data.setup
 from data.state import level,state_load,state_menu,state_timeout,state_gameover
 
 
-
 class Game(object):
     def __init__(self,state):
         self.screen = pg.display.get_surface()
@@ -31,7 +30,6 @@ class Game(object):
                 self.toggle_fps(event.key)
             elif event.type == KEYUP:
                 self.keys = pg.key.get_pressed()
-                
     
     def update(self):
         self.current_time = pg.time.get_ticks()
@@ -56,9 +54,8 @@ class Game(object):
         while self.running:
             self.clock.tick(c.FPS)
             self.handle_event()
-            self.update()   
-            pg.display.update()
-            
+            self.update()    
+            pg.display.flip()
             if self.show_fps:
                 fps = self.clock.get_fps()
                 with_fps = "{} - {:.2f} FPS".format("Super Mario Bros", fps)
