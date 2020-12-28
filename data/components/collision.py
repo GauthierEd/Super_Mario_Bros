@@ -120,7 +120,7 @@ class Collision(object):
         elif power.name == "mushLife":
             power.kill()
             sound.up.play()
-            info.game_info[str(player.name)+"_lives"] += 1
+            info.game_info[str(player.name)+"_lifes"] += 1
 
     def adjust_collision_ennemy_x(self,ennemy,player):
         if player.rect.right > ennemy.rect.left and player.rect.left < ennemy.rect.left:

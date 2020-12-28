@@ -58,7 +58,7 @@ class Brick(pg.sprite.Sprite):
                     self.group.add(StarUnderground(self.rect.centerx,self.rect.y))
                 self.state = c.OPENED
             elif self.content == "mushLife":
-                if self.name == "overworld":
+                if self.name == "overworld" or self.name == "invisible":
                     self.group.add(MushroomLifeOverworld(self.rect.x,self.rect.y))
                 elif self.name == "underground":
                     self.group.add(MushroomLifeUnderground(self.rect.x,self.rect.y))
