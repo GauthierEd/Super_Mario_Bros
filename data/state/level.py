@@ -65,8 +65,6 @@ class Level(state.State):
         ground_4 = Collider(2480,c.GROUND_HEIGHT,912,24)
         ground_5 = Collider(3392,c.GROUND_HEIGHT,256,24)
 
-        
-        #self.lift = pg.sprite.Group()
         self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4,ground_5)
 
     def setup_pipe(self):
@@ -353,7 +351,6 @@ class Level(state.State):
         if self.flagEnd.rect.top < 121 * c.BACKGROUND_SIZE_MULTIPLIER:
             self.level.blit(self.flagEnd.image,self.flagEnd.rect)
         self.ground.draw(self.level)
-        #self.lift.draw(self.level)
         self.pipe.draw(self.level)
         self.bigCoin.draw(self.level)
         self.power.draw(self.level)
@@ -366,7 +363,7 @@ class Level(state.State):
         else:
             self.fireball = pg.sprite.Group(self.fireball_mario)
         self.fireball.draw(self.level)
-        self.checkpoint.draw(self.level)
+        #self.checkpoint.draw(self.level)
         self.coin.draw(self.level)
         self.draw_score(self.level)
         self.brick_piece.draw(self.level)
@@ -380,7 +377,6 @@ class Level(state.State):
     def update_all_sprites(self,keys):
         for player in self.player:
             player.update(keys)
-        #self.lift.update()
         self.brick.update()
         self.brick_piece.update()
         self.coin_brick.update(self.current_update)
@@ -575,7 +571,8 @@ class Level(state.State):
             player.rect.centerx = (x + 2625) * c.BACKGROUND_SIZE_MULTIPLIER
             x -= 7
         
-        
+######### SCORE  #########
+
     def set_score(self,string,x,y):
         score = self.info.create_score(string,x,y)
         timer = self.current_update
@@ -596,6 +593,9 @@ class Level(state.State):
         for line in self.score:
             for char in line:
                 char.rect.y -= 1
+                
+
+######### UPDATE VIEWPORT #########
 
     def update_viewport(self):
         if self.viewport.x < 3092 * c.BACKGROUND_SIZE_MULTIPLIER:
@@ -628,475 +628,30 @@ class Level(state.State):
             if b.content == "flower":
                 b.content = "mush"
 
+######### PLAYER COLLISION #########
+
     def adjust_position_player(self):
         for player in self.player:
             player.rect.x += round(player.vx)
             if not player.state == c.JUMPTODEATH:
                 player.canGoUnder = False
                 player.canGoOverworld = False
-                #self.check_mario_x_collision(player)
                 self.collision.check_mario_x_collision(player)
 
             player.rect.y += round(player.vy)
             if not player.state == c.JUMPTODEATH and player.transform == False:
-                #self.check_mario_y_collision(player)
                 self.collision.check_mario_y_collision(player)
                 self.check_if_mario_is_falling(player)
 
-    
-    ######### MARIO COLLISION #########
+    def check_if_mario_is_falling(self,player):
+        player.rect.y += 1
+        group_collide = pg.sprite.Group(self.brick,self.ground_pipe_stair,self.coin_brick)
 
-    def check_mario_x_collision(self,player):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(player,self.ground_pipe_stair)
-        hit_block = pg.sprite.spritecollideany(player,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(player,self.coin_brick)
-        hit_power = pg.sprite.spritecollideany(player,self.power)
-        hit_coin = pg.sprite.spritecollideany(player,self.bigCoin)
-        hit_ennemy = pg.sprite.spritecollideany(player,self.ennemy)
+        if  pg.sprite.spritecollideany(player,group_collide) is None:
+            if player.state != c.JUMP and player.state != c.TOSMALL and player.state != c.TORED and player.state != c.TOBIG and player.state != c.WAITFLAG and player.state != c.JUMPTODEATH and player.state != c.SLIDEFLAG and player.state != c.WALKTOCASTLE:
+                player.state = c.FALL
 
-        hit_checkpoint = pg.sprite.spritecollideany(player,self.checkpoint)
-        
-        if hit_ground_pipe_stair:
-            self.adjust_position_x(hit_ground_pipe_stair,player)
-        elif hit_block:
-            self.adjust_position_x(hit_block,player)
-        elif hit_coin_brick:
-            self.adjust_position_x(hit_coin_brick,player)
-        elif hit_power:
-            self.adjust_collision_power(hit_power,player)
-        elif hit_coin:
-            sound.coin.play()
-            info.game_info["coin_count"] += 1
-            hit_coin.kill()
-        elif hit_ennemy and not player.wasTouched and not player.state == c.JUMPTODEATH:
-            self.adjust_collision_ennemy_x(hit_ennemy,player)
-        elif hit_checkpoint:
-            self.adjust_collision_checkpoint(hit_checkpoint,player)
-
-        if player.rect.x < self.viewport.x:
-            player.rect.x = self.viewport.x
-        
-        
-
-
-    def adjust_collision_checkpoint(self,checkpoint,player):
-        if checkpoint.name == "1":
-            self.ennemy.add(self.ennemy_g1)
-            checkpoint.kill()
-        elif checkpoint.name == "2":
-            self.ennemy.add(self.ennemy_g2)
-            checkpoint.kill()
-        elif checkpoint.name == "3":
-            self.ennemy.add(self.ennemy_g3)
-            checkpoint.kill()
-        elif checkpoint.name == "4":
-            self.ennemy.add(self.ennemy_g4)
-            checkpoint.kill()
-        elif checkpoint.name == "5":
-            self.ennemy.add(self.ennemy_g5)
-            checkpoint.kill()
-        elif checkpoint.name == "6":
-            self.ennemy.add(self.ennemy_g6)
-            checkpoint.kill()
-        elif checkpoint.name == "7":
-            self.ennemy.add(self.ennemy_g7)
-            checkpoint.kill()
-        elif checkpoint.name == "8" and player.state != c.SLIDEFLAG and player.state != c.WAITFLAG:
-            
-            if self.multi:
-                if self.luigi.state != c.SLIDEFLAG and self.luigi.state != c.WAITFLAG and self.mario.state != c.SLIDEFLAG and self.mario.state != c.WAITFLAG:
-                    sound.main.stop()
-                    sound.flag.play()
-            else:
-                sound.main.stop()
-                sound.flag.play()
-            player.state = c.SLIDEFLAG
-            if self.flag.state != c.SLIDEFLAG:
-                self.flag.state = c.SLIDEFLAG
-            if player.rect.centery < 125:
-                info.game_info[str(player.name)+"_lifes"] += 1
-                sound.up.play()
-
-            elif player.rect.centery > 125 and player.rect.centery < 168:
-                info.game_info["scores"] += 5000
-                self.set_score("5000",player.rect.x+30,player.rect.y )
-
-            elif player.rect.centery > 168 and player.rect.centery < 302:
-                info.game_info["scores"] += 2000
-                self.set_score("2000",player.rect.x+30,player.rect.y)
-
-            elif player.rect.centery > 302 and player.rect.centery < 375:
-                info.game_info["scores"] += 800
-                self.set_score("800",player.rect.x+30,player.rect.y)
-
-            elif player.rect.centery > 375 and player.rect.centery < 455:
-                info.game_info["scores"] += 400
-                self.set_score("400",player.rect.x+30,player.rect.y)
-
-            elif player.rect.centery > 455 and player.rect.centery < 493:
-                info.game_info["scores"] += 200
-                self.set_score("200",player.rect.x+30,player.rect.y)
-            checkpoint.kill()
-            if len(self.player) > 1:
-                self.checkpoint.add(checkPoint(checkpoint.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,checkpoint.rect.y / c.BACKGROUND_SIZE_MULTIPLIER,checkpoint.rect.w/ c.BACKGROUND_SIZE_MULTIPLIER,checkpoint.rect.h/ c.BACKGROUND_SIZE_MULTIPLIER,"8"))
-            
-        elif checkpoint.name == "9" and player.state == c.SLIDEFLAG:
-            player.rect.x = player.rect.right + 5
-            player.right = False
-            player.vy = 0
-            if self.multi:
-                if self.mario.state != c.WAITFLAG and self.mario.state != c.WALKTOCASTLE and self.luigi.state != c.WAITFLAG and self.luigi.state != c.WALKTOCASTLE:
-                    sound.end.play()
-            else:
-                sound.end.play()
-            player.state = c.WAITFLAG
-        elif checkpoint.name == "pipe":
-            player.canGoUnder = True
-        elif checkpoint.name == "pipe2":
-            player.canGoOverworld = True
-
-    def adjust_collision_ennemy_x(self,ennemy,player):
-        if player.rect.right > ennemy.rect.left and player.rect.left < ennemy.rect.left:
-            if player.invincible:
-                if ennemy.name == "gumba":
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy.name == "shell":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy)
-                ennemy.jumpToDeath()
-                sound.kick.play()
-                self.ennemy_death.add(ennemy)
-            elif player.isBig:
-                if ennemy.name == "shell" and ennemy.vx == 0:
-                    
-                    player.rect.right = ennemy.rect.left
-                    ennemy.vx = 8
-                    player.vx -= 3
-                else:
-                    player.state = c.TOSMALL
-                    player.transform = True
-                    self.change_flower_into_mush()
-                    player.setWasTouched()
-                    sound.pipe.play()
-            else:
-                if ennemy.name == "shell" and ennemy.vx == 0:
-                    player.rect.right = ennemy.rect.left
-                    ennemy.vx = 8
-                    player.vx -= 3
-                else:
-                    player.vy = - 8
-                    player.state = c.JUMPTODEATH
-                    
-                    
-
-        elif player.rect.left < ennemy.rect.right and player.rect.right > ennemy.rect.right:
-            if player.invincible:
-                if ennemy.name == "gumba":
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                    
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy.name == "shell":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy)
-                ennemy.jumpToDeath()
-                sound.kick.play()
-                self.ennemy_death.add(ennemy)
-            elif player.isBig:
-                if ennemy.name == "shell" and ennemy.vx == 0:
-                    player.rect.left = ennemy.rect.right
-                    ennemy.vx = -8
-                    player.vx += 3
-                else:
-                    player.state = c.TOSMALL
-                    player.transform = True
-                    self.change_flower_into_mush()
-                    player.setWasTouched()
-                    sound.pipe.play()
-            else:
-                if ennemy.name == "shell" and ennemy.vx == 0:
-                    player.rect.left = ennemy.rect.right
-                    ennemy.vx = -8
-                    player.vx += 3
-                else:
-                    player.vy = - 8
-                    player.state = c.JUMPTODEATH                              
-    
-    def adjust_position_x(self,collider,player):
-        if player.rect.right > collider.rect.left and player.rect.left < collider.rect.left:
-            if collider.name == "invisible":
-                pass
-            player.rect.right = collider.rect.left
-            player.vx = 0
-        elif player.rect.left < collider.rect.right and player.rect.right > collider.rect.right:
-            if collider.name == "invisible":
-                pass
-            player.rect.left = collider.rect.right
-            player.vx = 0
-    
-    def adjust_collision_power(self,power,player):
-        info.game_info["scores"] += 1000
-        self.set_score("1000",power.rect.x,power.rect.y)
-        if power.name == "mush":
-            power.kill()
-            sound.powerup.play()
-            if player.isBig:
-                pass
-            else:
-                player.state = c.TOBIG
-                player.transform = True
-            if not self.multi:
-                self.change_mush_into_flower()
-            elif self.multi:
-                if self.mario.isBig or self.luigi.isBig:
-                    self.change_mush_into_flower()
-        elif power.name == "flower":
-            power.kill()
-            sound.powerup.play()
-            if player.power:
-                pass
-            else:
-                player.state = c.TORED
-                player.transform = True
-        elif power.name == "star":
-            power.kill()
-            sound.main.stop()
-            sound.powerup.play()
-            sound.star.play()
-            player.setInvincible()
-        elif power.name == "mushLife":
-            power.kill()
-            sound.up.play()
-            info.game_info[str(player.name)+"_lives"] += 1
-          
-    def prevent_error_collision(self,block1,block2,player):
-        dist_between_block1_and_mario = abs(block1.rect.centerx - player.rect.centerx)
-        dist_between_block2_and_mario = abs(block2.rect.centerx - player.rect.centerx)
-
-        # si mario plus proche du block1 retourne Vrai pour block1 et Faux pour block2
-        if dist_between_block1_and_mario < dist_between_block2_and_mario:
-            return block1,False
-        # inversement
-        elif dist_between_block1_and_mario > dist_between_block2_and_mario:
-            return False, block2
-        # si dist entre mario et les 2 blocs sont égale alors par defaut block1 = Vrai et block2 = Faux
-        else:
-             return block1,False
-    
-    def check_mario_y_collision(self,player):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(player,self.ground_pipe_stair)
-        #hit_lift = pg.sprite.spritecollideany(player,self.lift)
-        hit_block = pg.sprite.spritecollideany(player,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(player,self.coin_brick)
-        
-        hit_ennemy = pg.sprite.spritecollideany(player,self.ennemy)
-
-        if hit_block and hit_coin_brick:
-            hit_block,hit_coin_brick = self.prevent_error_collision(hit_block,hit_coin_brick,player)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_collider(hit_ground_pipe_stair,player)
-        elif hit_coin_brick:
-            self.adjust_position_coin_brick(hit_coin_brick,player)
-        elif hit_block:
-            self.adjust_position_brick(hit_block,player)
-        elif hit_ennemy and not player.wasTouched:
-            self.adjust_collision_ennemy_y(hit_ennemy,player)
-
-        self.check_if_mario_is_falling(player)
-
-    def adjust_position_lift_y(self,lift,player):
-        if player.rect.bottom > lift.rect.top and player.rect.top < lift.rect.top:
-            player.vy = lift.vy
-            player.rect.bottom = lift.rect.top
-            if player.state != c.WALKTOCASTLE and player.state != c.WAITFLAG and player.state != c.SLIDEFLAG:
-                player.state = c.WALK
-            player.isjump = False
-
-        elif player.rect.top < lift.rect.bottom and player.rect.bottom > lift.rect.bottom:
-            player.vy = 3
-            player.rect.top = lift.rect.bottom
-            player.state = c.FALL
-
-    def adjust_collision_ennemy_y(self,ennemy,player):
-        if player.rect.bottom > ennemy.rect.top and player.rect.top < ennemy.rect.top:
-            if player.invincible:
-                if ennemy.name == "gumba":
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy.name == "shell":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy)
-                ennemy.jumpToDeath()
-                sound.kick.play()
-                self.ennemy_death.add(ennemy)
-            else:
-                sound.stomp.play()
-                player.vy = -7
-                player.rect.bottom = ennemy.rect.top
-                if ennemy.name == "gumba":
-                    self.ennemy.remove(ennemy)
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                    ennemy.startToDeath()
-                    self.ennemy_death.add(ennemy)
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    self.ennemy.remove(ennemy)
-                    info.game_info["scores"] += 200
-                    if ennemy.type == "overworld":
-                        self.ennemy.add(ShellOverworld(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    elif ennemy.type == "underground":
-                        self.ennemy.add(ShellUnderground(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    elif ennemy.type == "red":
-                        self.ennemy.add(ShellRed(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    ennemy.kill()
-                elif ennemy.name == "shell":
-                    if ennemy.vx == 0:
-                        if player.rect.centerx < (ennemy.rect.centerx - (ennemy.rect.width / 4)):
-                            ennemy.vx = 8
-                        elif player.rect.centerx > (ennemy.rect.centerx + (ennemy.rect.width / 4)):
-                            ennemy.vx = -8
-                    else:
-                        ennemy.vx = 0
-            
-        elif player.rect.top < ennemy.rect.bottom and player.rect.bottom > ennemy.rect.bottom:
-            if player.invincible:
-                if ennemy.name == "gumba":
-                    self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy.name == "koopa":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy.name == "shell":
-                    self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy)
-                ennemy.jumpToDeath()
-                sound.kick.play()
-                self.ennemy_death.add(ennemy)
-            elif player.isBig:
-                player.state = c.TOSMALL
-                player.transform = True
-                self.change_flower_into_mush()
-                player.setWasTouched()
-                sound.pipe.play()
-            else:
-                player.vy = - 8
-                player.state = c.JUMPTODEATH
-               
-            
-
-    def adjust_position_collider(self,collider,player):
-        if player.rect.bottom > collider.rect.top and player.rect.top < collider.rect.top:
-            player.vy = 0
-            player.rect.bottom = collider.rect.top
-            if player.state != c.WALKTOCASTLE and player.state != c.WAITFLAG and player.state != c.SLIDEFLAG:
-                player.state = c.WALK
-            player.isjump = False
-
-        elif player.rect.top < collider.rect.bottom and player.rect.bottom > collider.rect.bottom:
-            player.vy = 3
-            player.rect.top = collider.rect.bottom
-            player.state = c.FALL
-
-    def adjust_position_brick(self,collider,player):
-        if player.rect.bottom > collider.rect.top and player.rect.top < collider.rect.top:
-            if collider.name == "invisible":
-                pass
-            player.vy = 0
-            player.rect.bottom = collider.rect.top
-            player.state = c.WALK
-            player.isjump = False
-
-        elif player.rect.top < collider.rect.bottom and player.rect.bottom > collider.rect.bottom:
-            if player.isBig:
-                if collider.content != "coin" and collider.content != "star" and collider.content != "mushLife" and collider.state != c.OPENED:
-                    sound.break_sound.play()
-                    info.game_info["scores"] += 50
-                    self.check_if_ennemy_on_brick(collider)
-                    collider.kill()
-                    if collider.name == "overworld":
-                        self.brick_piece.add(BrickPieceOverworld(collider.rect.x,collider.rect.y,-5,-12,0))
-                        self.brick_piece.add(BrickPieceOverworld(collider.rect.right-16,collider.rect.y,5,-12,1))
-                        self.brick_piece.add(BrickPieceOverworld(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
-                        self.brick_piece.add(BrickPieceOverworld(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
-                    elif collider.name == "underground":  
-                        self.brick_piece.add(BrickPieceUnderground(collider.rect.x,collider.rect.y,-5,-12,0))
-                        self.brick_piece.add(BrickPieceUnderground(collider.rect.right-16,collider.rect.y,5,-12,1))
-                        self.brick_piece.add(BrickPieceUnderground(collider.rect.x,collider.rect.bottom-16,-5,-8,2))
-                        self.brick_piece.add(BrickPieceUnderground(collider.rect.right-16,collider.rect.bottom-16,5,-8,3))
-                else:
-                    sound.bump.play()
-                    if collider.state != c.OPENED:
-                        collider.startBump()
-                        self.check_if_ennemy_on_brick(collider)
-                        if collider.content == "coin":
-                            info.game_info["coin_count"] += 1
-                            self.set_score("200",collider.rect.x,collider.rect.y)
-                            info.game_info["scores"] += 200
-                            sound.coin.play()
-                        elif collider.content == "star":
-                            sound.power_appear.play()
-                        elif collider.content == "mushLife":
-                            sound.power_appear.play()
-            else:
-                sound.bump.play()
-                if collider.state != c.OPENED:
-                    collider.startBump()
-                    self.check_if_ennemy_on_brick(collider)
-                    if collider.content == "coin":
-                        info.game_info["coin_count"] += 1
-                        self.set_score("200",collider.rect.x,collider.rect.y)
-                        info.game_info["scores"] += 200
-                        sound.coin.play()
-                    elif collider.content == "star":
-                        sound.power_appear.play()
-                    elif collider.content == "mushLife":
-                        sound.power_appear.play()
-            
-            player.vy = 3
-            player.rect.top = collider.rect.bottom
-            player.state = c.FALL
-        
-    def adjust_position_coin_brick(self,collider,player):
-        if player.rect.bottom > collider.rect.top and player.rect.top < collider.rect.top:
-            player.vy = 0
-            player.rect.bottom = collider.rect.top
-            player.state = c.WALK
-            player.isjump = False
-
-        elif player.rect.top < collider.rect.bottom and player.rect.bottom > collider.rect.bottom:
-            if collider.state == c.RESTING:
-                if collider.content == "coin":
-                    info.game_info["coin_count"] += 1
-                    info.game_info["scores"] += 200
-                    self.set_score("200",collider.rect.x,collider.rect.y)
-                    sound.coin.play()
-                else:
-                    sound.power_appear.play()
-                
-            else:
-                sound.bump.play()
-            if collider.state != c.OPENED:
-                collider.startBump()
-                self.check_if_ennemy_on_brick(collider)
-            player.vy = 5
-            player.rect.top = collider.rect.bottom
-            player.state = c.FALL
-    
+        player.rect.y -= 1
     
     def check_if_ennemy_on_brick(self,brick):
         brick.rect.y -= 1
@@ -1117,16 +672,7 @@ class Level(state.State):
             self.ennemy_death.add(hit_ennemy)
         brick.rect.y += 1
 
-    def check_if_mario_is_falling(self,player):
-        player.rect.y += 1
-        group_collide = pg.sprite.Group(self.brick,self.ground_pipe_stair,self.coin_brick)
-        
-
-        if  pg.sprite.spritecollideany(player,group_collide) is None:
-            if player.state != c.JUMP and player.state != c.TOSMALL and player.state != c.TORED and player.state != c.TOBIG and player.state != c.WAITFLAG and player.state != c.JUMPTODEATH and player.state != c.SLIDEFLAG and player.state != c.WALKTOCASTLE:
-                player.state = c.FALL
-
-        player.rect.y -= 1
+    
 
 
 ######### POWER COLLISION #########
@@ -1140,110 +686,9 @@ class Level(state.State):
                 m.rect.y += round(m.vy)
                 self.collision.check_power_collision_y(m)
                 self.power.add(m)
-            """if (m.name == "mush" or m.name == "mushLife") and m.state != c.POWER_SPAWN:
-                self.power.remove(m)
-                m.rect.x += round(m.vx)
-                self.check_mush_collision_x(m)
-
-                m.rect.y += round(m.vy)
-                self.check_mush_collision_y(m)
-                self.power.add(m)
-            elif m.name == "star" and m.state != c.POWER_SPAWN:
-                m.rect.x += round(m.vx)
-                self.check_star_collision_x(m)
-
-                m.rect.y += round(m.vy)
-                self.check_star_collision_y(m)"""
-
-    def check_star_collision_x(self,star):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(star,self.ground_pipe_stair)
-        hit_brick = pg.sprite.spritecollideany(star,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(star,self.coin_brick)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_power_x(star,hit_ground_pipe_stair)
-        elif hit_brick:
-            self.adjust_position_power_x(star,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_power_x(star,hit_coin_brick)
-
-    def check_star_collision_y(self,star):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(star,self.ground_pipe_stair)
-        hit_brick = pg.sprite.spritecollideany(star,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(star,self.coin_brick)
-        #hit_lift = pg.sprite.spritecollideany(star,self.lift)
-
-        if hit_brick and hit_coin_brick:
-            hit_brick,hit_coin_brick = self.prevent_error_collision(hit_brick,hit_coin_brick,star)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_power_y(star,hit_ground_pipe_stair)
-        elif hit_brick:
-            self.adjust_position_power_y(star,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_power_y(star,hit_coin_brick)
-        
-
-
-    def check_mush_collision_x(self,mush):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(mush,self.ground_pipe_stair)
-        hit_mush = pg.sprite.spritecollideany(mush,self.power)
-        hit_brick = pg.sprite.spritecollideany(mush,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(mush,self.coin_brick)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_power_x(mush,hit_ground_pipe_stair)
-        elif hit_mush:
-            self.adjust_position_power_x(mush,hit_mush)
-        elif hit_brick:
-            self.adjust_position_power_x(mush,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_power_x(mush,hit_coin_brick)
-
-    def check_mush_collision_y(self,mush):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(mush,self.ground_pipe_stair)
-        #hit_lift = pg.sprite.spritecollideany(mush,self.lift)
-        hit_brick = pg.sprite.spritecollideany(mush,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(mush,self.coin_brick)
-
-        if hit_brick and hit_coin_brick:
-            hit_brick,hit_coin_brick = self.prevent_error_collision(hit_brick,hit_coin_brick,mush)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_power_y(mush,hit_ground_pipe_stair)
-        elif hit_brick:
-            self.adjust_position_power_y(mush,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_power_y(mush,hit_coin_brick)
-
-    def adjust_position_power_x(self,power,collider):
-        if power.rect.right > collider.rect.left and power.rect.left < collider.rect.left:
-            power.rect.right = collider.rect.left
-            power.vx *= -1
-        elif power.rect.left < collider.rect.right and power.rect.right > collider.rect.right:
-            power.rect.left = collider.rect.right
-            power.vx *= -1
-
-    def adjust_position_power_y(self,power,collider):
-        if power.rect.bottom > collider.rect.top and power.rect.top < collider.rect.top:
-            if power.name == "mush" or power.name == "mushLife":
-                if collider.name == "lift":
-                    power.vy = collider.vy
-                else:
-                    power.vy = 0
-            elif power.name == "star":
-                power.vy *= -1
-            power.rect.bottom = collider.rect.top
-
-        elif power.rect.top < collider.rect.bottom and power.rect.bottom > collider.rect.bottom:
-            if power.name == "mush" or power.name == "mushLife":
-                power.vy = 0
-            elif power.name == "star":
-                power.vy *= -1
-            power.rect.top = collider.rect.bottom
-            
 
 ######### ENNEMY COLLISION #########
+
     def adjust_position_ennemy(self):
         for e in self.ennemy:
             if e.name == "pirana":
@@ -1252,254 +697,16 @@ class Level(state.State):
             elif e.state != c.DEATH:
                 self.ennemy.remove(e)
                 e.rect.x += round(e.vx)
-                #self.check_ennemy_collision_x(e)
                 self.collision.check_ennemy_collision_x(e)
                 e.rect.y += round(e.vy)
-                #self.check_ennemy_collision_y(e)
                 self.collision.check_ennemy_collision_y(e)
                 self.ennemy.add(e)
-           
-    def check_ennemy_collision_x(self,ennemy):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(ennemy,self.ground_pipe_stair)
-        hit_ennemy = pg.sprite.spritecollideany(ennemy,self.ennemy)
-        hit_brick = pg.sprite.spritecollideany(ennemy,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(ennemy,self.coin_brick)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_ennemy_x(ennemy,hit_ground_pipe_stair)
-        elif hit_ennemy:
-            self.adjust_collision_ennemy_to_ennemy_x(ennemy,hit_ennemy)
-        elif hit_brick:
-            self.adjust_position_ennemy_x(ennemy,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_ennemy_x(ennemy,hit_coin_brick)
-
-    def adjust_collision_ennemy_to_ennemy_x(self,ennemy1,ennemy2):
-        if ennemy1.rect.right > ennemy2.rect.left and ennemy1.rect.left < ennemy2.rect.left:
-            if ennemy1.name == "shell":
-                if ennemy2.name == "gumba":
-                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy2.name == "koopa":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy2.name == "shell":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy2)
-                sound.kick.play()
-                ennemy2.jumpToDeath()
-                self.ennemy_death.add(ennemy2)
-            else:
-                ennemy1.rect.right = ennemy2.rect.left
-                ennemy1.vx *= -1
-
-        elif ennemy1.rect.left < ennemy2.rect.right and ennemy1.rect.right > ennemy2.rect.right:
-            if ennemy1.name == "shell":
-                if ennemy2.name == "gumba":
-                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy2.name == "koopa":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy2.name == "shell":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy2)
-                sound.kick.play()
-                ennemy2.jumpToDeath()
-                self.ennemy_death.add(ennemy2)
-            else:
-                ennemy1.rect.left = ennemy2.rect.right
-                ennemy1.vx *= -1
-
-    def adjust_position_ennemy_x(self,ennemy,collider):
-        if ennemy.rect.right > collider.rect.left and ennemy.rect.left < collider.rect.left:
-            ennemy.rect.right = collider.rect.left
-            ennemy.vx *= -1
-        elif ennemy.rect.left < collider.rect.right and ennemy.rect.right > collider.rect.right:
-            ennemy.rect.left = collider.rect.right
-            ennemy.vx *= -1
-
-    def check_ennemy_collision_y(self,ennemy):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(ennemy,self.ground_pipe_stair)
-        hit_ennemy = pg.sprite.spritecollideany(ennemy,self.ennemy)
-        hit_brick = pg.sprite.spritecollideany(ennemy,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(ennemy,self.coin_brick)
-        #hit_lift = pg.sprite.spritecollideany(ennemy,self.lift)
-        if hit_brick and hit_coin_brick:
-            hit_brick,hit_coin_brick = self.prevent_error_collision(hit_brick,hit_coin_brick,ennemy)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_ennemy_y(ennemy,hit_ground_pipe_stair)
-        elif hit_ennemy:
-            self.adjust_position_ennemy_to_ennemy_y(ennemy,hit_ennemy)
-        elif hit_brick:
-            self.adjust_position_ennemy_y(ennemy,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_ennemy_y(ennemy,hit_coin_brick)
-
-    def adjust_position_ennemy_y(self,ennemy,collider):
-        if ennemy.rect.bottom > collider.rect.top and ennemy.rect.top < collider.rect.top:
-            if collider.name == "lift":
-                ennemy.vy = collider.vy 
-            else:
-                ennemy.vy = 0
-            ennemy.rect.bottom = collider.rect.top
-
-        elif ennemy.rect.top < collider.rect.bottom and ennemy.rect.bottom > collider.rect.bottom:
-            ennemy.vy = 0
-            ennemy.rect.top = collider.rect.bottom
-    
-    def adjust_position_ennemy_to_ennemy_y(self,ennemy1,ennemy2):
-        if ennemy1.rect.bottom > ennemy2.rect.top and ennemy1.rect.top < ennemy2.rect.top:
-            if ennemy1.name == "shell":
-                if ennemy2.name == "gumba":
-                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy2.name == "koopa":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy2.name == "shell":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy2)
-                sound.kick.play()
-                ennemy2.jumpToDeath()
-                self.ennemy_death.add(ennemy2)
-            else:
-                ennemy1.vy = 0
-                ennemy1.rect.bottom = ennemy2.rect.top
-
-        elif ennemy1.rect.top < ennemy2.rect.bottom and ennemy1.rect.bottom > ennemy2.rect.bottom:
-            if ennemy1.name == "shell":
-                if ennemy2.name == "gumba":
-                    self.set_score("100",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 100
-                elif ennemy2.name == "koopa":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                elif ennemy2.name == "shell":
-                    self.set_score("200",ennemy2.rect.x,ennemy2.rect.y)
-                    info.game_info["scores"] += 200
-                self.ennemy.remove(ennemy2)
-                sound.kick.play()
-                ennemy2.jumpToDeath()
-                self.ennemy_death.add(ennemy2)
-            else:
-                ennemy1.vy = 0
-                ennemy1.rect.top = ennemy2.rect.bottom
-
 
 ######### FIREBALL COLLISION ###########
+
     def adjust_position_fireball(self):
         for b in self.fireball:
             b.rect.x += round(b.vx)
-            #self.check_fireball_collision_x(b)
             self.collision.check_fireball_collision_x(b)
             b.rect.y += round(b.vy)
-            #self.check_fireball_collision_y(b)
             self.collision.check_fireball_collision_y(b)
-           
-    def check_fireball_collision_x(self,fireball):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(fireball,self.ground_pipe_stair)
-        hit_ennemy = pg.sprite.spritecollideany(fireball,self.ennemy)
-        hit_brick = pg.sprite.spritecollideany(fireball,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(fireball,self.coin_brick)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_fireball_x(fireball,hit_ground_pipe_stair)
-        elif hit_ennemy:
-            self.adjust_collision_fireball_to_ennemy_x(fireball,hit_ennemy)
-        elif hit_brick:
-            self.adjust_position_fireball_x(fireball,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_fireball_x(fireball,hit_coin_brick)
-
-    def adjust_collision_fireball_to_ennemy_x(self,fireball,ennemy):
-        if ennemy.name == "gumba":
-            self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 100
-        elif ennemy.name == "koopa":
-            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 200
-        elif ennemy.name == "shell":
-            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 200
-        if fireball.rect.right > ennemy.rect.left and fireball.rect.left < ennemy.rect.left:
-            self.ennemy.remove(ennemy)
-            sound.kick.play()
-            ennemy.jumpToDeath()
-            fireball.kill()
-            self.ennemy_death.add(ennemy)
-            
-        elif fireball.rect.left < ennemy.rect.right and fireball.rect.right > ennemy.rect.right:
-            self.ennemy.remove(ennemy)
-            sound.kick.play()
-            ennemy.jumpToDeath()
-            fireball.kill()
-            self.ennemy_death.add(ennemy)
-
-    def adjust_position_fireball_x(self,fireball,collider):
-        if fireball.rect.right > collider.rect.left and fireball.rect.left < collider.rect.left:
-            fireball.rect.right = collider.rect.left
-            fireball.vx = 0
-            fireball.kill()
-
-        elif fireball.rect.left < collider.rect.right and fireball.rect.right > collider.rect.right:
-            fireball.rect.left = collider.rect.right
-            fireball.vx = 0
-            fireball.kill()
-
-    def check_fireball_collision_y(self,fireball):
-        hit_ground_pipe_stair = pg.sprite.spritecollideany(fireball,self.ground_pipe_stair)
-        hit_ennemy = pg.sprite.spritecollideany(fireball,self.ennemy)
-        hit_brick = pg.sprite.spritecollideany(fireball,self.brick)
-        hit_coin_brick = pg.sprite.spritecollideany(fireball,self.coin_brick)
-        #hit_lift = pg.sprite.spritecollideany(fireball,self.lift)
-
-        if hit_brick and hit_coin_brick:
-            hit_brick,hit_coin_brick = self.prevent_error_collision(hit_brick,hit_coin_brick,fireball)
-
-        if hit_ground_pipe_stair:
-            self.adjust_position_fireball_y(fireball,hit_ground_pipe_stair)
-        elif hit_ennemy:
-            self.adjust_position_fireball_to_ennemy_y(fireball,hit_ennemy)
-        elif hit_brick:
-            self.adjust_position_fireball_y(fireball,hit_brick)
-        elif hit_coin_brick:
-            self.adjust_position_fireball_y(fireball,hit_coin_brick)
-
-    def adjust_position_fireball_y(self,fireball,collider):
-        
-        if fireball.rect.bottom > collider.rect.top and fireball.rect.top < collider.rect.top:
-            fireball.vy *= -1
-            fireball.rect.bottom = collider.rect.top
-
-        elif fireball.rect.top < collider.rect.bottom and fireball.rect.bottom > collider.rect.bottom:
-            fireball.vy *= -1
-            fireball.rect.top = collider.rect.bottom
-    
-    def adjust_position_fireball_to_ennemy_y(self,fireball,ennemy):
-        if ennemy.name == "gumba":
-            self.set_score("100",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 100
-        elif ennemy.name == "koopa":
-            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 200
-        elif ennemy.name == "shell":
-            self.set_score("200",ennemy.rect.x,ennemy.rect.y)
-            info.game_info["scores"] += 200
-        if fireball.rect.bottom > ennemy.rect.top and fireball.rect.top < ennemy.rect.top:
-            self.ennemy.remove(ennemy)
-            sound.kick.play()
-            ennemy.jumpToDeath()
-            fireball.kill()
-            self.ennemy_death.add(ennemy)
-
-        elif fireball.rect.top < ennemy.rect.bottom and fireball.rect.bottom > ennemy.rect.bottom:
-            self.ennemy.remove(ennemy)
-            sound.kick.play()
-            ennemy.jumpToDeath()
-            fireball.kill()
-            self.ennemy_death.add(ennemy)

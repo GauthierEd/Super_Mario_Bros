@@ -624,7 +624,6 @@ class Collision(object):
         # ///   ENNEMY COLLISION X   ///
         try:
             hit_ennemy = pg.sprite.spritecollideany(ennemy,self.game.ennemy)
-            print(hit_ennemy)
             if hit_ennemy:
                 self.adjust_collision_ennemy_to_ennemy_x(ennemy,hit_ennemy)
         except AttributeError:
@@ -663,7 +662,6 @@ class Collision(object):
                 ennemy2.jumpToDeath()
                 self.game.ennemy_death.add(ennemy2)
             else:
-                print("a")
                 ennemy1.rect.right = ennemy2.rect.left
                 ennemy1.vx *= -1
 
@@ -683,7 +681,6 @@ class Collision(object):
                 ennemy2.jumpToDeath()
                 self.game.ennemy_death.add(ennemy2)
             else:
-                print("b")
                 ennemy1.rect.left = ennemy2.rect.right
                 ennemy1.vx *= -1
 
