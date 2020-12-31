@@ -35,7 +35,6 @@ class Coin(pg.sprite.Sprite):
 
     def update(self,current_time):
         self.current_update = current_time
-
         self.vy += self.gravity
         self.rect.y += self.vy
 
@@ -131,7 +130,7 @@ class BigCoin(pg.sprite.Sprite):
         self.frame.append(self.getImage(35,98,10,14))
     
     def update(self,current_time):
-        self.current_update = current_time
+        self.current_update = pg.time.get_ticks()
         if self.last_update == 0:
             self.last_update = self.current_update
         elif self.time_between_2_date(200,250):

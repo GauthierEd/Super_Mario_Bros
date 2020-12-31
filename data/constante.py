@@ -2,7 +2,8 @@ from pygame.locals import *
 
 # State Game
 MAIN_MENU = "main_menu"
-LEVEL = "level"
+LEVEL_1_1 = "level_1_1"
+LEVEL_1_2 = "level_1_2"
 LOAD = "load"
 GAMEOVER = "gameover"
 TIMEOUT = "timeout"
@@ -42,7 +43,7 @@ DEAD = "dead"
 SLIDEFLAG = "slideflag"
 WAITFLAG = "waitflag"
 WALKTOCASTLE = "walktocastle"
-
+CINEMATIC = "cinematic"
 
 MAX_WALK_SPEED = 6
 WALK_ACC = 0.15
@@ -76,3 +77,4 @@ FPS = 60
 BACKGROUND_SIZE_MULTIPLIER = 2.679
 SIZE_MULTIPLIER = 2.5
 BRICK_SIZE_MULTIPLIER = 2.69
+PIPE_SIZE_MULTIPLIER = 2.6875

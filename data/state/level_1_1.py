@@ -14,7 +14,7 @@ from .. components.collision import *
 from . import state
 from .. import setup
 
-class Level(state.State):
+class Level_1_1(state.State):
     def __init__(self):
         state.State.__init__(self)
         
@@ -31,7 +31,7 @@ class Level(state.State):
         self.timeEnd_timer = 0
         self.under_timer = 0
         self.setup_everything()
-        self.info = info.Info(c.LEVEL)
+        self.info = info.Info(c.LEVEL_1_1)
 
     def setup_background(self):
         self.background = pg.image.load("images/fond_1.png").convert()
@@ -59,57 +59,57 @@ class Level(state.State):
             self.player.add(self.luigi)
 
     def setup_ground(self):
-        ground_1 = Collider(0,c.GROUND_HEIGHT,1104,24)
-        ground_2 = Collider(1136,c.GROUND_HEIGHT,240,24)
-        ground_3 = Collider(1424,c.GROUND_HEIGHT,1024,24)
-        ground_4 = Collider(2480,c.GROUND_HEIGHT,912,24)
-        ground_5 = Collider(3392,c.GROUND_HEIGHT,256,24)
+        ground_1 = Collider(0,200,1104,24)
+        ground_2 = Collider(1136,200,240,24)
+        ground_3 = Collider(1424,200,1024,24)
+        ground_4 = Collider(2480,200,912,24)
+        ground_5 = Collider(3392,200,256,24)
 
         self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4,ground_5)
 
     def setup_pipe(self):
-        pipe_1 = Collider(449,452,30,31)
-        pipe_2 = Collider(609,153 * c.BACKGROUND_SIZE_MULTIPLIER,30,47)
-        pipe_3 = Collider(737,137 * c.BACKGROUND_SIZE_MULTIPLIER,30,63)
-        pipe_4 = Collider(913,137 * c.BACKGROUND_SIZE_MULTIPLIER,30,63)
-        pipe_5 = Collider(2609,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
-        pipe_6 = Collider(2865,169 * c.BACKGROUND_SIZE_MULTIPLIER,30,31)
-        pipe_7 = Collider(3635,168 * c.BACKGROUND_SIZE_MULTIPLIER,40,32)
-        pipe_8 = Collider(3675,24 * c.BACKGROUND_SIZE_MULTIPLIER,16,176)
+        pipe_1 = Pipe(448,168,32,32)
+        pipe_2 = Pipe(608,152,32,48)
+        pipe_3 = Pipe(736,136,32,64)
+        pipe_4 = Pipe(912,136,32,64)
+        pipe_5 = Pipe(2608,168,32,32)
+        pipe_6 = Pipe(2864,168,32,32)
+        pipe_7 = Collider(3635,168,40,32)
+        pipe_8 = Collider(3675,24,16,176)
 
         self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6,pipe_7,pipe_8)
 
     def setup_stair(self):
-        stair_1 = Collider(2144,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_2 = Collider(2160,168 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_3 = Collider(2176,152 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_4 = Collider(2192,136 * c.BACKGROUND_SIZE_MULTIPLIER,16,64)
+        stair_1 = Collider(2144,184,16,16)
+        stair_2 = Collider(2160,168,16,16)
+        stair_3 = Collider(2176,152,16,16)
+        stair_4 = Collider(2192,136,16,64)
 
-        stair_5 = Collider(2240,136 * c.BACKGROUND_SIZE_MULTIPLIER,16,64)
-        stair_6 = Collider(2256,152 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_7 = Collider(2272,168 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_8 = Collider(2288,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
+        stair_5 = Collider(2240,136,16,64)
+        stair_6 = Collider(2256,152,16,16)
+        stair_7 = Collider(2272,168,16,16)
+        stair_8 = Collider(2288,184,16,16)
 
-        stair_9 = Collider(2368,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_10 = Collider(2384,168 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_11 = Collider(2400,152 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_12 = Collider(2416,136 * c.BACKGROUND_SIZE_MULTIPLIER,32,64)
+        stair_9 = Collider(2368,184,16,16)
+        stair_10 = Collider(2384,168,16,16)
+        stair_11 = Collider(2400,152,16,16)
+        stair_12 = Collider(2416,136,32,64)
         
-        stair_13 = Collider(2480,136 * c.BACKGROUND_SIZE_MULTIPLIER,16,64)
-        stair_14 = Collider(2496,152 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_15 = Collider(2512,168 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_16 = Collider(2528,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
+        stair_13 = Collider(2480,136,16,64)
+        stair_14 = Collider(2496,152,16,16)
+        stair_15 = Collider(2512,168,16,16)
+        stair_16 = Collider(2528,184,16,16)
 
-        stair_17 = Collider(2896,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_18 = Collider(2912,168 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_19 = Collider(2928,152 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_20 = Collider(2944,136 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_21 = Collider(2960,120 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_22 = Collider(2979,104 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_23 = Collider(2992,88 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
-        stair_24 = Collider(3008,72 * c.BACKGROUND_SIZE_MULTIPLIER,32,128)
+        stair_17 = Collider(2896,184,16,16)
+        stair_18 = Collider(2912,168,16,16)
+        stair_19 = Collider(2928,152,16,16)
+        stair_20 = Collider(2944,136,16,16)
+        stair_21 = Collider(2960,120,16,16)
+        stair_22 = Collider(2979,104,16,16)
+        stair_23 = Collider(2992,88,16,16)
+        stair_24 = Collider(3008,72,32,128)
 
-        bottom_flag = Collider(3168,184 * c.BACKGROUND_SIZE_MULTIPLIER,16,16)
+        bottom_flag = Collider(3168,184,16,16)
 
         self.stair = pg.sprite.Group(stair_1,stair_2,stair_3,stair_4,
                                      stair_5,stair_6,stair_7,stair_8,

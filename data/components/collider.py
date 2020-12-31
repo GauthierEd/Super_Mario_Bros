@@ -10,7 +10,7 @@ class Collider(pg.sprite.Sprite):
         self.image = pg.Surface([self.w,self.h],pg.SRCALPHA,32).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
-        self.rect.y = y 
+        self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
 
 
 class Lift(pg.sprite.Sprite):
@@ -20,8 +20,8 @@ class Lift(pg.sprite.Sprite):
         self.sprite = pg.image.load("images/sprite_object.png").convert()
         self.image = self.load_img()
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
+        self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
         self.vy = 2 * direction
     
     def getImage(self,x,y,w,h):

@@ -309,6 +309,16 @@ class Perso(pg.sprite.Sprite):
             self.waitFlag()
         elif self.state == c.WALKTOCASTLE:
             self.walkToCastle()
+        elif self.state == c.CINEMATIC:
+            self.cinematic()
+    
+    def cinematic(self):
+        self.vy = 0
+        self.vx = 2
+
+        if self.current_update - self.last_update > self.calculate_speed_animation():
+            self.last_update = self.current_update
+            self.frame_index = (self.frame_index + 1) % 3
     
     def slideFlag(self):
         self.vx = 0

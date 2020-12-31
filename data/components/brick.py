@@ -63,6 +63,18 @@ class Brick(pg.sprite.Sprite):
                 elif self.name == "underground":
                     self.group.add(MushroomLifeUnderground(self.rect.x,self.rect.y))
                 self.state = c.OPENED
+            elif self.content == "mush":
+                if self.name == "overworld":
+                    self.group.add(MushroomOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(MushroomUnderground(self.rect.x,self.rect.y))
+                self.state = c.OPENED
+            elif self.content == "flower":
+                if self.name == "overworld":
+                    self.group.add(FlowerOverworld(self.rect.x,self.rect.y))
+                elif self.name == "underground":
+                    self.group.add(FlowerUnderground(self.rect.x,self.rect.y))
+                self.state = c.OPENED
             elif self.content == "coin":
                 self.group.add(Coin(self.rect.centerx,self.rect.y))
                 self.coin -= 1

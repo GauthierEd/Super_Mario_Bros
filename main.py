@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.locals import *
 import data.constante as c
 import data.setup
-from data.state import level,state_load,state_menu,state_timeout,state_gameover
+from data.state import level_1_1,level_1_2,state_load,state_menu,state_timeout,state_gameover
 
 
 class Game(object):
@@ -14,7 +14,8 @@ class Game(object):
         self.all_state = {
             c.MAIN_MENU : state_menu.Menu(),
             c.LOAD : state_load.Load(),
-            c.LEVEL : level.Level(),
+            c.LEVEL_1_1 : level_1_1.Level_1_1(),
+            c.LEVEL_1_2 : level_1_2.Level_1_2(),
             c.GAMEOVER : state_gameover.GameOver(),
             c.TIMEOUT : state_timeout.timeOut()
         }

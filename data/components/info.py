@@ -206,7 +206,7 @@ class Info(object):
         if self.state == c.MAIN_MENU:
             self.flash_coin.update()
             self.setup_count_coin()
-        elif self.state == c.LEVEL:
+        elif self.state == c.LEVEL_1_1:
             self.timeUpdate(current_time,state)
             self.setup_timer()
             self.setup_score()
@@ -242,7 +242,7 @@ class Info(object):
     def draw(self,screen):
         if self.state == c.MAIN_MENU:
             self.draw_main_menu(screen)
-        elif self.state == c.LEVEL:
+        elif self.state == c.LEVEL_1_1:
             self.draw_level(screen)
         elif self.state == c.GAMEOVER:
             self.draw_gameover(screen)

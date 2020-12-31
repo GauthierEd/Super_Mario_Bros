@@ -94,7 +94,7 @@ class CoinBrick(pg.sprite.Sprite):
         pass
         
     def update(self,current_time):
-        self.current_update = current_time
+        self.current_update = pg.time.get_ticks()
         self.handleState()
         bottom = self.rect.bottom
         left = self.rect.left

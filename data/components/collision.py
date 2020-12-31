@@ -270,6 +270,9 @@ class Collision(object):
             player.canGoUnder = True
         elif checkpoint.name == "pipe2":
             player.canGoOverworld = True
+        elif checkpoint.name == "pipe3":
+            player.canGoOverworld = True
+            self.game.overworld = True
 
     def prevent_error_collision(self,block1,block2,player):
         dist_between_block1_and_mario = abs(block1.rect.centerx - player.rect.centerx)
@@ -439,7 +442,8 @@ class Collision(object):
 
         elif player.rect.top < collider.rect.bottom and player.rect.bottom > collider.rect.bottom:
             if player.isBig:
-                if collider.content != "coin" and collider.content != "star" and collider.content != "mushLife" and collider.state != c.OPENED:
+                print(collider.content)
+                if collider.content != "coin" and collider.content != "star" and collider.content != "mushLife" and collider.content != "flower" and collider.content != "mush" and collider.state != c.OPENED:
                     sound.break_sound.play()
                     info.game_info["scores"] += 50
                     self.game.check_if_ennemy_on_brick(collider)
@@ -466,7 +470,7 @@ class Collision(object):
                             sound.coin.play()
                         elif collider.content == "star":
                             sound.power_appear.play()
-                        elif collider.content == "mushLife":
+                        elif collider.content == "mushLife" or collider.content == "mush" or collider.content == "flower":
                             sound.power_appear.play()
             else:
                 sound.bump.play()

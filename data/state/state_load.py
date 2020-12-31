@@ -10,7 +10,7 @@ class Load(state.State):
         state.State.__init__(self)
 
     def startup(self,current_time):
-        self.next = c.LEVEL
+        self.next = c.LEVEL_1_2
         self.info = info.Info(c.LOAD)
         self.current_update = current_time
         info.game_info["time"] = 401
