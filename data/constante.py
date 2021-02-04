@@ -1,5 +1,12 @@
 from pygame.locals import *
 
+# State Pirana
+MOVEUP = "moveup"
+MOVEDOWN = "movedown"
+DEATH = "death"
+RESTING = 'resting'
+
+
 # State Game
 MAIN_MENU = "main_menu"
 LEVEL_1_1 = "level_1_1"

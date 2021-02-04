@@ -22,6 +22,8 @@ class Menu(state.State):
 
     def setup_game_info(self):
         info.game_info = {
+            "cinematic":True,
+            "level":c.LEVEL_1_1,
             "coin_count" : 0,
             "mario_lifes" : 3,
             "luigi_lifes" : 3,

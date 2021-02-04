@@ -48,7 +48,7 @@ class Lift(pg.sprite.Sprite):
 
 
 class Pipe(pg.sprite.Sprite):
-    def __init__(self,x,y,w,h):
+    def __init__(self,x,y,w,h,pirana = None):
         pg.sprite.Sprite.__init__(self)
         self.name = "pipe"
         self.sprite = pg.image.load("images/sprite_tiles.png").convert()
@@ -59,6 +59,7 @@ class Pipe(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * c.BACKGROUND_SIZE_MULTIPLIER
         self.rect.y = y * c.BACKGROUND_SIZE_MULTIPLIER
+        self.pirana = pirana
 
     def getImage(self,x,y,w,h):
         image = pg.Surface((w,h))

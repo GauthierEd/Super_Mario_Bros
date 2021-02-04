@@ -21,6 +21,7 @@ flag = pg.mixer.Sound("sounds/flag.ogg")
 count_time = pg.mixer.Sound("sounds/count_down.ogg")
 
 main = pg.mixer.Sound("sounds/main.ogg")
+under = pg.mixer.Sound("sounds/underground.ogg")
 star = pg.mixer.Sound("sounds/star.ogg")
 time = pg.mixer.Sound("sounds/time.ogg")
 end = pg.mixer.Sound("sounds/end.ogg")

@@ -6,6 +6,12 @@ from .. import sound
 from .coin import flash_coin
 
 game_info = {
+    "mario_big":False,
+    "mario_power":False,
+    "luigi_big":False,
+    "luigi_power":False,
+    "cinematic":True,
+    "level":c.LEVEL_1_1,
     "coin_count" : 0,
     "mario_lifes" : 3,
     "luigi_lifes" : 3,
@@ -110,10 +116,15 @@ class Info(object):
         time = []
         
         self.create_sentence(world,"WORLD",450,30)
-        self.create_sentence(level,"1-1",480,60)
+        if self.state == c.LEVEL_1_1:
+            self.create_sentence(level,"1-1",480,60)
+        elif self.state == c.LEVEL_1_2:
+            self.create_sentence(level,"1-2",480,60)
         self.create_sentence(time,"TIME",650,30)
 
         self.info = [world,level,time]
+    
+    
 
     def setup_mario(self):
         self.mario_word = []
@@ -125,7 +136,11 @@ class Info(object):
 
     def setup_load_world(self):
         self.load_world = []
-        self.create_sentence(self.load_world,"WORLD 1-1",270,220)
+        if game_info["level"] == c.LEVEL_1_1:
+            self.create_sentence(self.load_world,"WORLD 1-1",270,220)
+        elif game_info["level"] == c.LEVEL_1_2:
+            self.create_sentence(self.load_world,"WORLD 1-2",270,220)   
+        
 
     def setup_mario_life(self):
         self.mario_life = []
@@ -213,6 +228,13 @@ class Info(object):
             self.setup_count_coin()
             self.update_coin()
             self.flash_coin.update()
+        elif self.state == c.LEVEL_1_2:
+            self.timeUpdate(current_time,state)
+            self.setup_timer()
+            self.setup_score()
+            self.setup_count_coin()
+            self.update_coin()
+            self.flash_coin.update()
         elif self.state == c.LOAD:
             self.flash_coin.update()
         elif self.state == c.GAMEOVER:
@@ -243,7 +265,9 @@ class Info(object):
         if self.state == c.MAIN_MENU:
             self.draw_main_menu(screen)
         elif self.state == c.LEVEL_1_1:
-            self.draw_level(screen)
+            self.draw_level_1_1(screen)
+        elif self.state == c.LEVEL_1_2:
+            self.draw_level_1_2(screen)
         elif self.state == c.GAMEOVER:
             self.draw_gameover(screen)
         elif self.state == c.TIMEOUT:
@@ -307,7 +331,26 @@ class Info(object):
             
         screen.blit(self.flash_coin.image,self.flash_coin.rect)
 
-    def draw_level(self,screen):
+    def draw_level_1_1(self,screen):
+        for text in self.info:
+            for char in text:
+                screen.blit(char.image,char.rect)
+        
+        for char in self.mario_word:
+            screen.blit(char.image,char.rect)
+
+        for char in self.coin_total:
+            screen.blit(char.image,char.rect)
+        
+        for char in self.timer:
+            screen.blit(char.image,char.rect)
+        
+        for char in self.score:
+            screen.blit(char.image,char.rect)
+
+        screen.blit(self.flash_coin.image,self.flash_coin.rect)
+    
+    def draw_level_1_2(self,screen):
         for text in self.info:
             for char in text:
                 screen.blit(char.image,char.rect)

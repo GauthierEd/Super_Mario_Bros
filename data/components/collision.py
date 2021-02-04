@@ -217,14 +217,26 @@ class Collision(object):
         elif checkpoint.name == "7":
             self.game.ennemy.add(self.game.ennemy_g7)
             checkpoint.kill()
+        elif checkpoint.name == "10":
+            self.game.ennemy.add(self.game.ennemy_g8)
+            checkpoint.kill()
+        elif checkpoint.name == "11":
+            self.game.ennemy.add(self.game.ennemy_g9)
+            checkpoint.kill()
+        elif checkpoint.name == "12":
+            for p in self.game.player:
+                p.vx = 0
+                p.inCastle = True
         elif checkpoint.name == "8" and player.state != c.SLIDEFLAG and player.state != c.WAITFLAG:
             
             if self.game.multi:
                 if self.game.luigi.state != c.SLIDEFLAG and self.game.luigi.state != c.WAITFLAG and self.game.mario.state != c.SLIDEFLAG and self.game.mario.state != c.WAITFLAG:
                     sound.main.stop()
+                    sound.under.stop()
                     sound.flag.play()
             else:
                 sound.main.stop()
+                sound.under.stop()
                 sound.flag.play()
             player.state = c.SLIDEFLAG
             if self.game.flag.state != c.SLIDEFLAG:
@@ -377,34 +389,45 @@ class Collision(object):
                 sound.kick.play()
                 self.game.ennemy_death.add(ennemy)
             else:
-                sound.stomp.play()
-                player.vy = -7
-                player.rect.bottom = ennemy.rect.top
-                if ennemy.name == "gumba":
-                    self.game.ennemy.remove(ennemy)
-                    self.game.set_score("100",ennemy.rect.x,ennemy.rect.y)
-                    info.game_info["scores"] += 100
-                    ennemy.startToDeath()
-                    self.game.ennemy_death.add(ennemy)
-                elif ennemy.name == "koopa":
-                    self.game.set_score("200",ennemy.rect.x,ennemy.rect.y)
-                    self.game.ennemy.remove(ennemy)
-                    info.game_info["scores"] += 200
-                    if ennemy.type == "overworld":
-                        self.game.ennemy.add(ShellOverworld(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    elif ennemy.type == "underground":
-                        self.game.ennemy.add(ShellUnderground(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    elif ennemy.type == "red":
-                        self.game.ennemy.add(ShellRed(ennemy.rect.x / c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y / c.BACKGROUND_SIZE_MULTIPLIER)+9,pg.time.get_ticks(),self.ennemy))
-                    ennemy.kill()
-                elif ennemy.name == "shell":
-                    if ennemy.vx == 0:
-                        if player.rect.centerx < (ennemy.rect.centerx - (ennemy.rect.width / 4)):
-                            ennemy.vx = 8
-                        elif player.rect.centerx > (ennemy.rect.centerx + (ennemy.rect.width / 4)):
-                            ennemy.vx = -8
+                if ennemy.name == "pirana":
+                    if player.isBig:
+                        player.state = c.TOSMALL
+                        player.transform = True
+                        self.game.change_flower_into_mush()
+                        player.setWasTouched()
+                        sound.pipe.play()
                     else:
-                        ennemy.vx = 0
+                        player.vy = - 8
+                        player.state = c.JUMPTODEATH
+                else:
+                    sound.stomp.play()
+                    player.vy = -7
+                    player.rect.bottom = ennemy.rect.top
+                    if ennemy.name == "gumba":
+                        self.game.ennemy.remove(ennemy)
+                        self.game.set_score("100",ennemy.rect.x,ennemy.rect.y)
+                        info.game_info["scores"] += 100
+                        ennemy.startToDeath()
+                        self.game.ennemy_death.add(ennemy)
+                    elif ennemy.name == "koopa":
+                        self.game.set_score("200",ennemy.rect.x,ennemy.rect.y)
+                        self.game.ennemy.remove(ennemy)
+                        info.game_info["scores"] += 200
+                        if ennemy.type == "overworld":
+                            self.game.ennemy.add(ShellOverworld(ennemy.rect.x/c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y/c.BACKGROUND_SIZE_MULTIPLIER)+9,self.game.current_update,self.game.ennemy))
+                        elif ennemy.type == "underground":
+                            self.game.ennemy.add(ShellUnderground(ennemy.rect.x/c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y/c.BACKGROUND_SIZE_MULTIPLIER),self.game.current_update,self.game.ennemy))
+                        elif ennemy.type == "red":
+                            self.game.ennemy.add(ShellRed(ennemy.rect.x/c.BACKGROUND_SIZE_MULTIPLIER,(ennemy.rect.y/c.BACKGROUND_SIZE_MULTIPLIER)+9,self.game.current_update,self.game.ennemy))
+                        ennemy.kill()
+                    elif ennemy.name == "shell":
+                        if ennemy.vx == 0:
+                            if player.rect.centerx < (ennemy.rect.centerx - (ennemy.rect.width / 4)):
+                                ennemy.vx = 8
+                            elif player.rect.centerx > (ennemy.rect.centerx + (ennemy.rect.width / 4)):
+                                ennemy.vx = -8
+                        else:
+                            ennemy.vx = 0
             
         elif player.rect.top < ennemy.rect.bottom and player.rect.bottom > ennemy.rect.bottom:
             if player.invincible:
@@ -442,7 +465,6 @@ class Collision(object):
 
         elif player.rect.top < collider.rect.bottom and player.rect.bottom > collider.rect.bottom:
             if player.isBig:
-                print(collider.content)
                 if collider.content != "coin" and collider.content != "star" and collider.content != "mushLife" and collider.content != "flower" and collider.content != "mush" and collider.state != c.OPENED:
                     sound.break_sound.play()
                     info.game_info["scores"] += 50
@@ -668,6 +690,8 @@ class Collision(object):
             else:
                 ennemy1.rect.right = ennemy2.rect.left
                 ennemy1.vx *= -1
+                if(ennemy1.name == "gumba" or ennemy1.name == "koopa"):
+                    ennemy1.right = not ennemy1.right
 
         elif ennemy1.rect.left < ennemy2.rect.right and ennemy1.rect.right > ennemy2.rect.right:
             if ennemy1.name == "shell":
@@ -687,14 +711,20 @@ class Collision(object):
             else:
                 ennemy1.rect.left = ennemy2.rect.right
                 ennemy1.vx *= -1
+                if(ennemy1.name == "gumba" or ennemy1.name == "koopa"):
+                    ennemy1.right = not ennemy1.right
 
     def adjust_position_ennemy_x(self,ennemy,collider):
         if ennemy.rect.right > collider.rect.left and ennemy.rect.left < collider.rect.left:
             ennemy.rect.right = collider.rect.left
             ennemy.vx *= -1
+            if(ennemy.name == "gumba" or ennemy.name == "koopa"):
+                ennemy.right = not ennemy.right
         elif ennemy.rect.left < collider.rect.right and ennemy.rect.right > collider.rect.right:
             ennemy.rect.left = collider.rect.right
             ennemy.vx *= -1
+            if(ennemy.name == "gumba" or ennemy.name == "koopa"):
+                ennemy.right = not ennemy.right
 
     def check_ennemy_collision_y(self,ennemy):
         # ///   LIFT COLLISION Y   ///

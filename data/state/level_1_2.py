@@ -20,7 +20,10 @@ class Level_1_2(state.State):
     def startup(self,current_time):
         self.collision = Collision(self)
         self.next = None
-        self.state = c.CINEMATIC
+        if info.game_info["cinematic"]:
+            self.state = c.CINEMATIC
+        else:
+            self.state = c.NOTFREEZE
         self.timeOut = False
         self.transition = False
         self.under = False
@@ -31,7 +34,7 @@ class Level_1_2(state.State):
         self.timeEnd_timer = 0
         self.under_timer = 0
         self.setup_everything()
-        self.info = info.Info(c.LEVEL_1_1)
+        self.info = info.Info(c.LEVEL_1_2)
     
     def setup_background(self):
         self.background = pg.image.load("images/fond_lvl2.png").convert()
@@ -44,20 +47,51 @@ class Level_1_2(state.State):
         self.level = pg.Surface((width,height)).convert()
         self.level_rect = self.level.get_rect()
         self.viewport = setup.SCREEN.get_rect(bottom = self.level_rect.bottom)
-        self.viewport.x = 0 * c.BACKGROUND_SIZE_MULTIPLIER
-    
+        if info.game_info["cinematic"]:
+            self.viewport.x = 0 * c.BACKGROUND_SIZE_MULTIPLIER
+        else:
+            self.viewport.x = 299 * c.BACKGROUND_SIZE_MULTIPLIER
+        
     def setup_player(self):
         self.fireball_mario = pg.sprite.Group()
         self.fireball_luigi = pg.sprite.Group()
 
         self.player = pg.sprite.Group()
-        self.mario = Mario(56*c.BACKGROUND_SIZE_MULTIPLIER,200*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_mario)
-        self.mario.state = c.CINEMATIC
-        self.player.add(self.mario)
+
+        if info.game_info["cinematic"]:
+            self.mario = Mario(56*c.BACKGROUND_SIZE_MULTIPLIER,200*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_mario)
+            self.mario.state = c.CINEMATIC
+            if info.game_info["mario_big"]:
+                self.mario.setBigImg()
+            if info.game_info["mario_power"]:
+                self.mario.setRedImg()
+            self.player.add(self.mario)
+        else:
+            self.mario = Mario(340*c.BACKGROUND_SIZE_MULTIPLIER,40*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_mario)
+            self.mario.state = c.WALK
+            if info.game_info["mario_big"]:
+                self.mario.setBigImg()
+            if info.game_info["mario_power"]:
+                self.mario.setRedImg()
+            self.player.add(self.mario)
+        
         if info.game_info["multi"]:
-            self.luigi = Luigi(45*c.BACKGROUND_SIZE_MULTIPLIER,200*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_luigi)
-            self.luigi.state = c.CINEMATIC
-            self.player.add(self.luigi)
+            if info.game_info["cinematic"]:
+                self.luigi = Luigi(30*c.BACKGROUND_SIZE_MULTIPLIER,200*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_luigi)
+                if info.game_info["luigi_big"]:
+                    self.luigi.setBigImg()
+                if info.game_info["luigi_power"]:
+                    self.luigi.setRedImg()
+                self.luigi.state = c.CINEMATIC
+                self.player.add(self.mario)
+            else:
+                self.luigi = Luigi(340*c.BACKGROUND_SIZE_MULTIPLIER,20*c.BACKGROUND_SIZE_MULTIPLIER,self.fireball_luigi)
+                if info.game_info["luigi_big"]:
+                    self.luigi.setBigImg()
+                if info.game_info["luigi_power"]:
+                    self.luigi.setRedImg()
+                self.luigi.state = c.WALK
+                self.player.add(self.mario)
     
     def setup_ground(self):
         ground_1 = Collider(0,200,1579,24)
@@ -70,9 +104,14 @@ class Level_1_2(state.State):
         self.ground = pg.sprite.Group(ground_1,ground_2,ground_3,ground_4,ground_5,ground_6)
     
     def setup_pipe(self):
-        pipe_1 = Pipe(1947,152,32,48)
-        pipe_2 = Pipe(2043,136,32,64)
-        pipe_3 = Pipe(2136,168,32,32)
+        pirana_1 = PiranaUnderground(1963,152)
+        pirana_2 = PiranaUnderground(2059,136)
+        pirana_3 = PiranaUnderground(2155,168)
+
+
+        pipe_1 = Pipe(1947,152,32,48,pirana_1)
+        pipe_2 = Pipe(2043,136,32,64,pirana_2)
+        pipe_3 = Pipe(2136,168,32,32,pirana_3)
         pipe_4 = Pipe(3147,152,32,48)
         pipe_5 = Pipe(3211,152,32,48)
         pipe_6 = Pipe(3275,152,32,48)
@@ -82,7 +121,11 @@ class Level_1_2(state.State):
         pipe_10 = Collider(4222,168,40,32)
         pipe_11 = Collider(4262,24,16,176)
 
+
+        self.realPipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3)
         self.pipe = pg.sprite.Group(pipe_1,pipe_2,pipe_3,pipe_4,pipe_5,pipe_6,pipe_7,pipe_8,pipe_9,pipe_10,pipe_11)
+        self.ennemy = pg.sprite.Group(pirana_1,pirana_2,pirana_3)
+        self.ennemy_death = pg.sprite.Group()
     
     def setup_stair(self):
         stair_1 = Collider(571,184,16,16)
@@ -111,10 +154,10 @@ class Level_1_2(state.State):
         stair_22 = Collider(3579,72,16,128)
 
         stair_23 = Collider(3723,184,16,16)
-
+        bottom_flag = Collider(3723,184,16,16)
         self.stair = pg.sprite.Group(stair_1,stair_2,stair_3,stair_4,stair_5,stair_6,stair_7,stair_8,stair_9,stair_10,stair_11,
                                         stair_12,stair_13,stair_14,stair_15,stair_16,stair_17,stair_18,stair_19,stair_20,stair_21,
-                                        stair_22,stair_23)
+                                        stair_22,stair_23,bottom_flag)
     
     def setup_brick(self):
         self.brick_piece = pg.sprite.Group()
@@ -313,22 +356,75 @@ class Level_1_2(state.State):
     def setup_lift(self):
         lift_1 = Lift(2535,200,-1)
         lift_2 = Lift(2535,100,-1)
-        lift_3 = Lift(2535,10,-1)
+        
 
         lift_4 = Lift(2775,200,-1)
         lift_5 = Lift(2775,100,-1)
-        lift_6 = Lift(2775,10,-1)
-        self.lift = pg.sprite.Group(lift_1,lift_2,lift_3,lift_4,lift_5,lift_6)
+        
+        self.lift = pg.sprite.Group(lift_1,lift_2,lift_4,lift_5)
 
     def setup_ennemy(self):
-        self.ennemy = pg.sprite.Group()
-        self.ennemy_death = pg.sprite.Group()
+        e1 = GumbaUnderground(513,184,-1)
+        e2 = GumbaUnderground(531,184,-1)
+       
+
+        e3 = GumbaUnderground(763,184,-1)
+        self.ennemy_g1 = pg.sprite.Group(e3)
+
+        e4 = KoopaUnderground(955,176,-1)
+        e5 = KoopaUnderground(977,176,-1)
+        self.ennemy_g2 = pg.sprite.Group(e4,e5)
+
+        e6 = KoopaUnderground(1139,176,-1)
+        self.ennemy_g3 = pg.sprite.Group(e6)
+
+        e7 = GumbaUnderground(1266,184,-1)
+        e8 = GumbaUnderground(1305,184,-1)
+        self.ennemy_g4 = pg.sprite.Group(e7,e8)
+
+        e9 = GumbaUnderground(1453,56,-1)
+        e10 = GumbaUnderground(1498,139,-1)
+        e11 = GumbaUnderground(1531,120,-1)
+        self.ennemy_g5 = pg.sprite.Group(e9,e10,e11)
+
+        e12 = GumbaUnderground(1824,184,-1)
+        e13 = GumbaUnderground(1842,184,-1)
+        e14 = GumbaUnderground(1860,184,-1)
+        self.ennemy_g6 = pg.sprite.Group(e12,e13,e14)
+
+        e15 = GumbaUnderground(2105,184,-1)
+        self.ennemy_g7 = pg.sprite.Group(e15)
+
+        e16 = GumbaUnderground(2427,168,-1)
+        e17 = GumbaUnderground(2459,136,-1)
+        self.ennemy_g8 = pg.sprite.Group(e16,e17)
+
+        e18 = KoopaUnderground(2660,176,1)
+        self.ennemy_g9 = pg.sprite.Group(e18)
+
+        self.ennemy.add(e1,e2)
+
+        self.all_ennemy = pg.sprite.Group(self.ennemy,self.ennemy_death,self.ennemy_g1,self.ennemy_g2,self.ennemy_g3,self.ennemy_g4,self.ennemy_g5,self.ennemy_g6,self.ennemy_g7,self.ennemy_g8,self.ennemy_g9)
 
     def setup_checkpoint(self):
         check_1 = checkPoint(1947,150,32,50,"pipe")
         check_2 = checkPoint(4221,168,1,32,"pipe2")
         check_3 = checkPoint(2954,120,1,32,"pipe3")
-        self.checkpoint = pg.sprite.Group(check_1,check_2,check_3)
+        check_4 = checkPoint(614,0,1,224,"1")
+        check_5 = checkPoint(827,0,1,224,"2")
+        check_6 = checkPoint(988,0,1,224,"3")
+        check_7 = checkPoint(1117,0,1,224,"4")
+        check_8 = checkPoint(1303,0,1,224,"5")
+        check_9 = checkPoint(1674,0,1,224,"6")
+        check_10 = checkPoint(1956,0,1,224,"7")
+        check_11 = checkPoint(2278,0,1,224,"10")
+        check_12 = checkPoint(2508,0,1,224,"11")
+        check_15 = checkPoint(3826,0,1,224,"12")
+        check13 = checkPoint(3730,32,2,152,"8")
+        check14 = checkPoint(3723,184,7,16,"9")
+        self.checkpoint = pg.sprite.Group(check_1,check_2,check_3,check_4,check_5,check_6,check_7,check_8,check_9,check_10,check_11,check_12,check13,check14,check_15)
+        self.flag = Flag(3730,40)
+        self.flagEnd = FlagEnd(3820,140)
 
     def setup_everything(self):
         self.setup_background()
@@ -345,6 +441,12 @@ class Level_1_2(state.State):
         self.setup_checkpoint()
 
         self.ground_pipe_stair = pg.sprite.Group(self.ground,self.pipe,self.stair)
+
+        if not self.multi:
+            self.change_mush_into_flower()
+        else:
+            if self.mario.isBig and self.luigi.isBig:
+                self.change_mush_into_flower()
     
     def update(self,keys,screen,current_time):
         self.current_update = current_time
@@ -363,20 +465,20 @@ class Level_1_2(state.State):
     
     def draw_everything(self,screen):
         self.level.blit(self.background, self.viewport,self.viewport)
-        #self.level.blit(self.flag.image,self.flag.rect)
+        self.level.blit(self.flag.image,self.flag.rect)
         if self.state != c.INCASTLE:
             for player in self.player:
                 self.level.blit(player.image,player.rect)
-        """if self.flagEnd.rect.top < 121 * c.BACKGROUND_SIZE_MULTIPLIER:
-            self.level.blit(self.flagEnd.image,self.flagEnd.rect)"""
+        if self.flagEnd.rect.top < 121 * c.BACKGROUND_SIZE_MULTIPLIER:
+            self.level.blit(self.flagEnd.image,self.flagEnd.rect)
         self.ground.draw(self.level)
-        self.pipe.draw(self.level)
         self.bigCoin.draw(self.level)
         self.power.draw(self.level)
         self.brick.draw(self.level)
         self.lift.draw(self.level)
         self.ennemy.draw(self.level)
         self.ennemy_death.draw(self.level)
+        self.pipe.draw(self.level)
         self.coin_brick.draw(self.level)
         if self.multi:
             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_luigi)
@@ -413,14 +515,14 @@ class Level_1_2(state.State):
         self.bigCoin.update(self.current_update)
         self.power.update(self.current_update)
         self.lift.update()
-        self.ennemy.update()
-        self.ennemy_death.update()
+        self.ennemy.update(self.current_update)
+        self.ennemy_death.update(self.current_update)
         if self.multi:
             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_luigi)
         else:
             self.fireball = pg.sprite.Group(self.fireball_mario)
         self.fireball.update()
-        #self.flag.update()
+        self.flag.update()
         self.update_score()
         self.adjust_position_player()
         self.adjust_position_power()
@@ -428,6 +530,7 @@ class Level_1_2(state.State):
         self.adjust_position_fireball()
         self.info.update(self.current_update,self.mario.state)
         self.update_viewport()
+        self.check_if_pirana_can_move()
         self.check_if_mario_in_transition()
         self.check_if_change_state()
         self.check_if_timeout()
@@ -437,7 +540,7 @@ class Level_1_2(state.State):
         self.info.end_score()
         self.info.update(self.current_update,self.mario.state)
         self.coin_brick.update(self.current_update)
-        """self.flagEnd.update()
+        self.flagEnd.update()
         if int(info.game_info["time"]) == 0 and self.flagEnd.rect.bottom > (121*c.BACKGROUND_SIZE_MULTIPLIER):
             self.flagEnd.state = c.SLIDEFLAG
         
@@ -446,7 +549,8 @@ class Level_1_2(state.State):
                 self.timeEnd_timer = self.current_update
             elif self.current_update - self.timeEnd_timer > 3000:
                 self.done = True
-                self.next = c.MAIN_MENU"""
+                self.next = c.MAIN_MENU
+                info.game_info["level"] = c.LEVEL_1_1
         
     def update_while_transition_mario(self,keys):
         for player in self.player:
@@ -563,6 +667,7 @@ class Level_1_2(state.State):
         for player in self.player:
             if player.dead and player.test_when_die:
                 self.next = c.LOAD
+                info.game_info["cinematic"] = False
                 info.game_info[player.name+"_lifes"] -= 1
 
         if info.game_info["multi"]:
@@ -762,3 +867,15 @@ class Level_1_2(state.State):
             self.collision.check_fireball_collision_x(b)
             b.rect.y += round(b.vy)
             self.collision.check_fireball_collision_y(b)
+
+
+    def check_if_pirana_can_move(self):
+        for p in self.realPipe:
+            left = p.rect.left - 10
+            right = p.rect.right + 10
+            for player in self.player:
+                if(player.rect.right >= left and player.rect.left <= right):
+                    if p.pirana.vy > 0 or p.pirana.up == False:
+                        p.pirana.marioOn = True
+                else:
+                    p.pirana.marioOn = False

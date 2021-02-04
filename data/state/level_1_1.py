@@ -307,7 +307,8 @@ class Level_1_1(state.State):
         check9 = checkPoint(912,130,32,70,"pipe")
         check10 = checkPoint(3634,168,1,32,"pipe2")
         check11 = checkPoint(3168,184,7,16,"9")
-        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9,check10,check11)
+        check12 = checkPoint(3272,0,1,224,"12")
+        self.checkpoint = pg.sprite.Group(check1,check2,check3,check4,check5,check6,check7,check8,check9,check10,check11,check12)
         self.flag = Flag(3175,40)
         self.flagEnd = FlagEnd(3265,140)
         
@@ -383,8 +384,8 @@ class Level_1_1(state.State):
         self.coin.update(self.current_update)
         self.bigCoin.update(self.current_update)
         self.power.update(self.current_update)
-        self.ennemy.update()
-        self.ennemy_death.update()
+        self.ennemy.update(self.current_update)
+        self.ennemy_death.update(self.current_update)
         if self.multi:
             self.fireball = pg.sprite.Group(self.fireball_mario,self.fireball_luigi)
         else:
@@ -417,7 +418,14 @@ class Level_1_1(state.State):
                 self.timeEnd_timer = self.current_update
             elif self.current_update - self.timeEnd_timer > 3000:
                 self.done = True
-                self.next = c.MAIN_MENU
+                self.next = c.LOAD
+                info.game_info["level"] = c.LEVEL_1_2
+                info.game_info["mario_big"] = self.mario.isBig
+                info.game_info["mario_power"] = self.mario.power
+                if info.game_info["multi"]:
+                    info.game_info["luigi"] = self.luigi
+                    info.game_info["luigi_big"] = self.luigi.isBig
+                    info.game_info["luigi_power"] = self.luigi.power
         
     def update_while_transition_mario(self,keys):
         for player in self.player:

@@ -349,9 +349,7 @@ class Perso(pg.sprite.Sprite):
         if self.current_update - self.last_update > 130:
             self.last_update = self.current_update 
             self.frame_index = (self.frame_index + 1) % 3
-        if self.rect.x > 3265 * c.BACKGROUND_SIZE_MULTIPLIER:
-            self.vx = 0
-            self.inCastle = True
+        
             
 
     def jumpToDeath(self):

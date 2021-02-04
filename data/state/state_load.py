@@ -10,7 +10,7 @@ class Load(state.State):
         state.State.__init__(self)
 
     def startup(self,current_time):
-        self.next = c.LEVEL_1_2
+        self.next = info.game_info["level"]
         self.info = info.Info(c.LOAD)
         self.current_update = current_time
         info.game_info["time"] = 401
@@ -36,7 +36,10 @@ class Load(state.State):
                 screen.fill((0,0,0))
             else:
                 self.done = True
-                sound.main.play(-1)
+                if info.game_info["level"] == c.LEVEL_1_1:
+                    sound.main.play(-1)
+                elif info.game_info["level"] == c.LEVEL_1_2:
+                    sound.under.play(-1)
         else:
             if current_time - self.current_update < 3000:
                 self.info.update(current_time)
@@ -52,5 +55,8 @@ class Load(state.State):
                 screen.fill((0,0,0))
             else:
                 self.done = True
-                sound.main.play(-1)
+                if info.game_info["level"] == c.LEVEL_1_1:
+                    sound.main.play(-1)
+                elif info.game_info["level"] == c.LEVEL_1_2:
+                    sound.under.play(-1)
 
