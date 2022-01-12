@@ -2,8 +2,8 @@
 Ce projet est une reproduction du jeu Super Mario Bros. Seul les 2 premiers niveaux sont jouables. Il a été réalisé avec Python et la librairie Pygame
 
 ## Installation 
--Prérequis :
+- Prérequis :
  Python 3.7
  Pygame
--Télécharger le dossier github
--Ouvrir le dossier avec Visual Studio Code ou un autre éditeur (!important pour avoir les images et sons chargé dans le jeu)
+- Télécharger le dossier github
+- Ouvrir le dossier avec Visual Studio Code ou un autre éditeur (!important pour avoir les images et sons chargé dans le jeu)
