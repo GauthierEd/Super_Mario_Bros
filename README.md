@@ -5,3 +5,6 @@ Ce projet est une reproduction du jeu Super Mario Bros. Seul les 2 premiers nive
 - Prérequis : Python 3.7.8 et Pygame 2.1.2
 - Télécharger le dossier github
 - Ouvrir le dossier avec Visual Studio Code ou un autre éditeur (!important pour avoir les images et sons chargé dans le jeu)
+
+## Licence
+[MIT](https://choosealicense.com/licenses/mit/)
